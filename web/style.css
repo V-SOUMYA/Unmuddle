@@ -154,6 +154,7 @@ details[open] > :not(summary) { animation: rise 0.3s var(--ease) both; }
 .join-card img { width: 124px; height: 124px; display: block; }
 .code { font-size: 2rem; font-weight: 600; letter-spacing: 0.14em; margin: 2px 0 4px; }
 
+.progress[hidden] { display: none; }
 .progress { display: flex; flex-direction: column; gap: 6px; margin-top: 16px; font-size: 0.925rem; color: var(--muted); }
 .progress div { display: flex; align-items: center; gap: 10px; opacity: 0.45; transition: opacity 0.3s ease, color 0.3s ease; }
 .progress div::before { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid currentColor; transition: background 0.3s ease; }
