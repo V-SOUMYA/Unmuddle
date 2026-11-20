@@ -67,7 +67,7 @@ pip install -r requirements.txt
 - [x] AI-literacy demo set
 - [x] Data loading and right/wrong grading
 - [x] Embeddings and clustering of wrong answers
-- [ ] Name each misconception, 2-minute fix, personal feedback and follow-up question
+- [x] Name each misconception, 2-minute fix, personal feedback and follow-up question
 - [ ] Evaluation on the Eedi dataset
 - [ ] API and live sessions
 - [ ] Learner page (join by QR code) and live leader dashboard
@@ -107,3 +107,22 @@ labels with the Adjusted Rand Index (ARI: 1.0 = perfect, 0 = random).
 
 Word overlap fails because students say the same wrong idea in different words:
 "browses the web" and "searches Google" share no words but mean the same thing.
+
+## Run the full pipeline
+
+Needs a Gemini API key in `.env`.
+
+```bash
+python -m unmuddle.pipeline --sample ai
+```
+
+For each question you get every misconception, biggest first, with:
+
+- **title**: the wrong belief, in the students' own terms
+- **explanation** and **why it's tempting**
+- **2-minute fix**: a quick class activity or analogy
+- **learner feedback**: a kind note for each learner who holds the belief
+- **follow-up question**: a new question that checks whether the belief is gone
+
+The LLM also merges groups that turn out to be the same misconception. The full report
+is saved to `outputs/report_ai.json`.
