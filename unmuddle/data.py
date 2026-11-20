@@ -29,6 +29,8 @@ class Answer:
     text: str
     # None means "not graded yet".
     is_correct: bool | None = None
+    # Hand label of the misconception behind a wrong answer (only used for evaluation).
+    myth_label: str | None = None
 
 
 def load_questions(path: str | Path) -> dict[str, Question]:
@@ -52,13 +54,17 @@ def load_answers(path: str | Path) -> list[Answer]:
     """Read an answers.csv file. The is_correct column is optional."""
     df = pd.read_csv(path, dtype={"student_id": str, "question_id": str})
     has_label = "is_correct" in df.columns
+    has_myth = "myth_label" in df.columns
     answers = []
     for row in df.itertuples(index=False):
         label = None
         if has_label and not pd.isna(row.is_correct):
             label = bool(int(row.is_correct))
+        myth = None
+        if has_myth and not pd.isna(row.myth_label) and str(row.myth_label).strip():
+            myth = str(row.myth_label).strip()
         text = "" if pd.isna(row.answer) else str(row.answer).strip()
-        answers.append(Answer(row.student_id, row.question_id, text, label))
+        answers.append(Answer(row.student_id, row.question_id, text, label, myth))
     return answers
 
 

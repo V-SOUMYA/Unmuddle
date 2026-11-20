@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Secrets
+.env
+
+# Data that should not be committed
+data/eedi/*
+!data/eedi/.gitkeep
+outputs/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store

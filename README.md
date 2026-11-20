@@ -66,7 +66,7 @@ pip install -r requirements.txt
 - [x] Project setup and sample data
 - [x] AI-literacy demo set
 - [x] Data loading and right/wrong grading
-- [ ] Embeddings and clustering of wrong answers
+- [x] Embeddings and clustering of wrong answers
 - [ ] Name each misconception, 2-minute fix, personal feedback and follow-up question
 - [ ] Evaluation on the Eedi dataset
 - [ ] API and live sessions
@@ -89,3 +89,21 @@ python -m unmuddle.grading --sample ai
 ```
 
 It grades the demo answers and shows how often it agrees with the hand labels.
+
+## Try the clustering
+
+```bash
+python -m unmuddle.cluster --sample ai --embedder minilm   # meaning-based (main)
+python -m unmuddle.cluster --sample ai --embedder tfidf    # word-overlap baseline
+```
+
+It prints the groups of wrong answers for each question and scores them against hand
+labels with the Adjusted Rand Index (ARI: 1.0 = perfect, 0 = random).
+
+| Embedder | Mean ARI on AI demo set |
+|---|---|
+| TF-IDF (word overlap, baseline) | 0.29 |
+| MiniLM (meaning) | _run it and add your number_ |
+
+Word overlap fails because students say the same wrong idea in different words:
+"browses the web" and "searches Google" share no words but mean the same thing.
