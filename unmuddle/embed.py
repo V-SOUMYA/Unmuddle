@@ -1,11 +1,11 @@
 """Turn answers into vectors, so answers with the same idea end up close together.
 
-Two embedders share one interface:
+Three embedders share one interface:
 - MiniLMEmbedder: a sentence-transformer model that understands meaning (default, runs locally).
 - GeminiEmbedder: Google's hosted embedding model (used on the live site, no PyTorch needed).
 - TfidfEmbedder: word-overlap vectors. No download needed; used in tests and as a baseline.
 
-Both return L2-normalized vectors, so a dot product is cosine similarity.
+All return L2-normalized vectors, so a dot product is cosine similarity.
 """
 
 from __future__ import annotations
