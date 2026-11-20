@@ -121,7 +121,7 @@ def grouping_score(clusters: list[Cluster]) -> float | None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Cluster wrong answers in a demo set.")
     parser.add_argument("--sample", choices=["ai", "sql"], default="ai")
-    parser.add_argument("--embedder", choices=["minilm", "tfidf"], default="minilm")
+    parser.add_argument("--embedder", choices=["minilm", "gemini", "tfidf"], default="minilm")
     args = parser.parse_args()
 
     # Uses the hand labels for right/wrong, so this step can be checked on its own.

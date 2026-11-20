@@ -145,7 +145,7 @@ def evaluate(folder: str | Path, embedder: Embedder, limit: int | None = None, s
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evaluate on the Eedi misconception dataset.")
-    parser.add_argument("--embedder", choices=["minilm", "tfidf"], default="minilm")
+    parser.add_argument("--embedder", choices=["minilm", "gemini", "tfidf"], default="minilm")
     parser.add_argument("--folder", default=str(EEDI_DIR))
     parser.add_argument("--limit", type=int, default=None, help="Only score this many wrong answers.")
     args = parser.parse_args()

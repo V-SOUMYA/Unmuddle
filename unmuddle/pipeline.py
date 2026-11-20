@@ -99,7 +99,7 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description="Run the full pipeline on a demo set.")
     parser.add_argument("--sample", choices=["ai", "sql"], default="ai")
-    parser.add_argument("--embedder", choices=["minilm", "tfidf"], default="minilm")
+    parser.add_argument("--embedder", choices=["minilm", "gemini", "tfidf"], default="minilm")
     args = parser.parse_args()
 
     questions, answers = load_sample(args.sample)
