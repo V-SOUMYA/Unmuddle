@@ -1,0 +1,20 @@
+[
+  {
+    "question_id": "q1",
+    "topic": "LEFT JOIN",
+    "text": "Students(id, name) has Alice (1) and Bob (2). Enrollments(student_id, course) has (1, 'DB') and (1, 'ML'). How many rows does this return, and what is Bob's course? SELECT s.name, e.course FROM Students s LEFT JOIN Enrollments e ON s.id = e.student_id;",
+    "reference_answer": "3 rows. Alice appears twice (DB and ML). Bob appears once with course NULL, because a LEFT JOIN keeps every row from the left table even when there is no match."
+  },
+  {
+    "question_id": "q2",
+    "topic": "WHERE vs HAVING",
+    "text": "Why does this query fail? SELECT dept, COUNT(*) FROM emp WHERE COUNT(*) > 5 GROUP BY dept;",
+    "reference_answer": "WHERE filters single rows before grouping, so it cannot use an aggregate like COUNT(*). The filter on the group count must go in HAVING, after GROUP BY."
+  },
+  {
+    "question_id": "q3",
+    "topic": "NULL comparison",
+    "text": "SELECT * FROM emp WHERE manager_id = NULL; returns no rows, even though some employees have no manager. Why?",
+    "reference_answer": "Comparing anything to NULL with = gives UNKNOWN, not TRUE, so no row passes the filter. Use WHERE manager_id IS NULL."
+  }
+]

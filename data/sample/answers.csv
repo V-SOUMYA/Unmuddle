@@ -1,0 +1,37 @@
+student_id,question_id,answer,is_correct
+s01,q1,"3 rows, Alice twice and Bob once with NULL course",1
+s02,q1,"2 rows. Bob is removed because he has no enrollment",0
+s03,q1,"Only Alice shows up, 2 rows, Bob has no match so he is dropped",0
+s04,q1,"3 rows. Bob's course is NULL since left join keeps all students",1
+s05,q1,"2 rows, one for Alice and one for Bob. Bob's course is NULL",0
+s06,q1,"2 rows because each student appears only once in a left join",0
+s07,q1,"Bob doesn't appear because the join needs a matching student_id",0
+s08,q1,"4 rows, every student paired with every enrollment",0
+s09,q1,"3 rows: Alice-DB, Alice-ML, Bob-NULL",1
+s10,q1,"2 rows. A join only returns rows that match in both tables",0
+s11,q1,"One row per student so 2 rows, Alice gets the first course DB",0
+s12,q1,"4 rows since it combines all rows from both tables",0
+s01,q2,"You can't use COUNT in WHERE, aggregates go in HAVING",1
+s02,q2,"GROUP BY has to be written before WHERE",0
+s03,q2,"WHERE runs before grouping so COUNT(*) doesn't exist yet. Use HAVING",1
+s04,q2,"It should be COUNT(dept) not COUNT(*)",0
+s05,q2,"The order is wrong, WHERE should come after GROUP BY",0
+s06,q2,"COUNT(*) counts nulls so it breaks, use COUNT(dept)",0
+s07,q2,"Need HAVING COUNT(*) > 5 because WHERE filters rows not groups",1
+s08,q2,"Move WHERE below GROUP BY and it works",0
+s09,q2,"You need to select emp_id too for COUNT to work",0
+s10,q2,"WHERE must come after GROUP BY in SQL",0
+s11,q2,"Missing an alias, should be COUNT(*) AS cnt and then WHERE cnt > 5",0
+s12,q2,"Use HAVING since filtering on an aggregate happens after GROUP BY",1
+s01,q3,"= NULL is never true, NULL compared with anything is unknown. Use IS NULL",1
+s02,q3,"NULL needs quotes, write manager_id = 'NULL'",0
+s03,q3,"Probably all employees actually have a manager",0
+s04,q3,"Should use IS NULL instead of = NULL",1
+s05,q3,"Put NULL in quotes like 'NULL' so it is compared as a value",0
+s06,q3,"The data must be wrong, there are no NULL managers",0
+s07,q3,"Use manager_id == NULL, single = is assignment",0
+s08,q3,"NULL is unknown so = NULL gives unknown, never true",1
+s09,q3,"Should be manager_id = 0 because NULL is stored as 0",0
+s10,q3,"Needs double equals == to compare",0
+s11,q3,"NULL means empty string so use manager_id = ''",0
+s12,q3,"Write it as 'NULL' in quotes",0
