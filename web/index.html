@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unmuddle: see what your class got wrong, and why</title>
+  <meta name="description" content="Unmuddle groups your learners' wrong answers by the misconception behind them and gives you a 2-minute fix for each.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <a class="wordmark" href="/">Un<span class="tangle">muddle</span></a>
+      <form class="join-inline" id="join-form" aria-label="Join a session">
+        <input type="text" id="join-code" placeholder="Class code" maxlength="6" aria-label="Class code" autocomplete="off">
+        <button class="btn ghost" type="submit">Join</button>
+      </form>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <h1>See what your class got wrong, and why.</h1>
+          <p class="lead">
+            Learners answer on their phones. Unmuddle groups the wrong answers by the idea
+            behind them, ranks each misconception by how many people hold it, and gives you a
+            2-minute way to fix it in class.
+          </p>
+          <div class="actions">
+            <a class="btn" href="#lessons">Start a session</a>
+            <button class="btn ghost" id="demo-btn" type="button">Try a demo class</button>
+          </div>
+          <p class="error" id="hero-error" role="alert"></p>
+        </div>
+
+        <article class="myth" aria-label="Example misconception">
+          <div class="myth-head">
+            <h3 class="myth-title">ChatGPT searches the internet for each answer</h3>
+            <span class="myth-count">5<small>/12</small></span>
+          </div>
+          <div class="dots" id="hero-dots" aria-hidden="true">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          </div>
+          <div class="fix">
+            <strong>2-minute fix</strong>
+            <p>Turn off the Wi-Fi and ask a downloaded model a question. It still answers, because it predicts words from what it learned in training.</p>
+          </div>
+          <p class="check"><span class="fixed-count" id="hero-fixed">0 of 5</span> fixed it on the follow-up question</p>
+        </article>
+      </section>
+
+      <section class="section" id="lessons">
+        <h2>Pick a lesson to start a live session</h2>
+        <p class="muted">Each lesson has two questions on a core AI idea. You'll get a code and a QR code for your group to join.</p>
+        <ul class="lessons" id="lesson-list"><li class="muted" style="padding:14px 4px">Loading lessons…</li></ul>
+        <p class="error" id="lesson-error" role="alert"></p>
+      </section>
+
+      <section class="section">
+        <h2>How it works</h2>
+        <ol class="muted" style="padding-left:1.2em; max-width:44em">
+          <li>Your group joins with the code and answers in their own words.</li>
+          <li>An AI checks each answer against the lesson's reference answer.</li>
+          <li>Sentence embeddings group the wrong answers that share an idea.</li>
+          <li>An LLM names each misconception and writes a quick fix for you.</li>
+          <li>Each learner gets kind feedback and one follow-up question. When they get it right, their dot turns teal on your screen.</li>
+        </ol>
+      </section>
+    </main>
+
+    <footer>Built for student-led AI clubs and chapters. Answers stay in your session.</footer>
+  </div>
+
+  <script src="common.js"></script>
+  <script>
+    async function startSession(lessonId) {
+      const { code } = await api("/api/sessions", { method: "POST", body: JSON.stringify({ lesson_id: lessonId }) });
+      location.href = `dashboard.html?code=${code}`;
+    }
+
+    async function loadLessons() {
+      const list = document.getElementById("lesson-list");
+      try {
+        const lessons = await api("/api/lessons");
+        list.innerHTML = lessons.map(l => `
+          <li><button class="lesson-btn" type="button" data-id="${esc(l.lesson_id)}">
+            <span class="lesson-num">${l.number}</span>
+            <span class="lesson-title">${esc(l.title)}</span>
+            <span class="lesson-go">Start</span>
+          </button></li>`).join("");
+        list.querySelectorAll(".lesson-btn").forEach(btn => btn.addEventListener("click", async () => {
+          btn.disabled = true;
+          try { await startSession(btn.dataset.id); }
+          catch (e) { document.getElementById("lesson-error").textContent = e.message; btn.disabled = false; }
+        }));
+      } catch (e) {
+        list.innerHTML = "";
+        document.getElementById("lesson-error").textContent = "Lessons didn't load. Refresh the page to try again.";
+      }
+    }
+
+    document.getElementById("demo-btn").addEventListener("click", async (ev) => {
+      ev.target.disabled = true;
+      try {
+        const { code } = await api("/api/demo", { method: "POST" });
+        location.href = `dashboard.html?code=${code}`;
+      } catch (e) {
+        document.getElementById("hero-error").textContent = e.message;
+        ev.target.disabled = false;
+      }
+    });
+
+    document.getElementById("join-form").addEventListener("submit", (ev) => {
+      ev.preventDefault();
+      const code = document.getElementById("join-code").value.trim().toUpperCase();
+      if (code) location.href = `join.html?code=${encodeURIComponent(code)}`;
+    });
+
+    // The one moment of motion: the example class gets unmuddled, dot by dot.
+    (function animateHero() {
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const all = [...document.querySelectorAll("#hero-dots .dot")];
+      const label = document.getElementById("hero-fixed");
+      let n = 0;
+      setTimeout(function step() {
+        if (n >= 3) return;
+        all[n].classList.add("fixed");
+        n += 1;
+        label.textContent = `${n} of 5`;
+        setTimeout(step, 900);
+      }, 1200);
+    })();
+
+    loadLessons();
+  </script>
+</body>
+</html>

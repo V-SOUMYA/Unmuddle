@@ -13,6 +13,7 @@ Run locally:
 
 from __future__ import annotations
 
+import io
 import os
 from pathlib import Path
 from typing import Callable
@@ -155,8 +156,9 @@ def create_app(
     def qr(code: str, request: Request):
         s = session_or_404(code)
         url = f"{str(request.base_url).rstrip('/')}/join.html?code={s['code']}"
-        svg = segno.make(url, error="m").svg_inline(scale=8, border=2)
-        return Response(svg, media_type="image/svg+xml")
+        buffer = io.BytesIO()
+        segno.make(url, error="m").save(buffer, kind="svg", scale=8, border=2, dark="#16213e")
+        return Response(buffer.getvalue(), media_type="image/svg+xml")
 
     # Learner side ---------------------------------------------------------
 
