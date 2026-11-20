@@ -47,6 +47,7 @@ dataset, where wrong answers are labeled by experts with the misconception behin
 
 ```
 unmuddle/          Python package (the pipeline)
+data/lessons.json  Question bank: 12 beginner AI lessons, 24 questions with known myths
 data/sample_ai/    Main demo set: AI-literacy questions + learner answers
 data/sample/       Second demo set: SQL questions + student answers
 data/eedi/         Eedi dataset goes here (not committed, see data/README.md)
@@ -71,7 +72,7 @@ pip install -r requirements.txt
 - [ ] Evaluation on the Eedi dataset
 - [ ] API and live sessions
 - [ ] Learner page (join by QR code) and live leader dashboard
-- [ ] Question bank for a 12-lesson beginner AI curriculum
+- [x] Question bank for a 12-lesson beginner AI curriculum
 - [ ] Live demo
 
 ## Run the tests

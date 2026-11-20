@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from unmuddle.config import SAMPLE_AI_DIR, SAMPLE_DIR
+from unmuddle.config import LESSONS_PATH, SAMPLE_AI_DIR, SAMPLE_DIR
 
 
 @dataclass
@@ -33,21 +33,40 @@ class Answer:
     myth_label: str | None = None
 
 
+@dataclass
+class Lesson:
+    lesson_id: str
+    number: int
+    title: str
+    questions: list[Question]
+
+
+def _question(item: dict) -> Question:
+    return Question(
+        question_id=item["question_id"],
+        topic=item.get("topic", ""),
+        text=item["text"],
+        reference_answer=item["reference_answer"],
+        known_misconceptions=item.get("known_misconceptions", []),
+    )
+
+
 def load_questions(path: str | Path) -> dict[str, Question]:
     """Read a questions.json file into a dict keyed by question_id."""
     with open(path, encoding="utf-8") as f:
         raw = json.load(f)
-    questions = {}
-    for item in raw:
-        q = Question(
-            question_id=item["question_id"],
-            topic=item.get("topic", ""),
-            text=item["text"],
-            reference_answer=item["reference_answer"],
-            known_misconceptions=item.get("known_misconceptions", []),
-        )
-        questions[q.question_id] = q
-    return questions
+    return {q.question_id: q for q in map(_question, raw)}
+
+
+def load_lessons(path: str | Path = LESSONS_PATH) -> list[Lesson]:
+    """Read the question bank: one entry per lesson, in order."""
+    with open(path, encoding="utf-8") as f:
+        raw = json.load(f)
+    lessons = [
+        Lesson(item["lesson_id"], item["number"], item["title"], [_question(q) for q in item["questions"]])
+        for item in raw
+    ]
+    return sorted(lessons, key=lambda l: l.number)
 
 
 def load_answers(path: str | Path) -> list[Answer]:

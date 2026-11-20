@@ -1,0 +1,254 @@
+[
+  {
+    "lesson_id": "L01",
+    "number": 1,
+    "title": "What is AI?",
+    "questions": [
+      {
+        "question_id": "L01-q1",
+        "topic": "Defining AI",
+        "text": "Is a calculator app an example of AI? Explain why or why not.",
+        "reference_answer": "No. A calculator follows fixed rules a programmer wrote and never learns from data. AI systems learn patterns from data or make decisions in situations they were not explicitly programmed for.",
+        "known_misconceptions": ["Anything a computer does is AI", "AI means a robot", "AI is anything that is fast at math"]
+      },
+      {
+        "question_id": "L01-q2",
+        "topic": "Narrow vs general AI",
+        "text": "A chess AI can beat any human. Does that mean it could also learn to drive a car? Why?",
+        "reference_answer": "No. Today's AI is narrow: it is trained for one task. Being great at chess gives it no ability to drive, because it never learned from driving data.",
+        "known_misconceptions": ["Smart AI is smart at everything", "AI that beats humans has human-level intelligence"]
+      }
+    ]
+  },
+  {
+    "lesson_id": "L02",
+    "number": 2,
+    "title": "How machines learn",
+    "questions": [
+      {
+        "question_id": "L02-q1",
+        "topic": "Learning from examples",
+        "text": "How does a spam filter learn to tell spam from normal email?",
+        "reference_answer": "It is shown many example emails already labeled spam or not spam, and it learns patterns that separate the two, like certain words or links. Nobody writes every rule by hand.",
+        "known_misconceptions": ["A programmer writes a rule for every spam email", "It reads and understands emails like a person", "It checks a list of every spam email ever sent"]
+      },
+      {
+        "question_id": "L02-q2",
+        "topic": "Supervised vs unsupervised",
+        "text": "A store groups its customers into types without telling the computer what the types are. What kind of learning is this, and how is it different from learning with labels?",
+        "reference_answer": "Unsupervised learning. The computer finds groups on its own from similarities in the data. With supervised learning, every example comes with the correct answer (a label) to learn from.",
+        "known_misconceptions": ["Unsupervised means no human was involved at all", "Unsupervised learning has no data", "The computer is told the groups in advance"]
+      }
+    ]
+  },
+  {
+    "lesson_id": "L03",
+    "number": 3,
+    "title": "Data: the fuel of AI",
+    "questions": [
+      {
+        "question_id": "L03-q1",
+        "topic": "Data quality",
+        "text": "A team trains a dog-breed classifier on 1 million photos, but many of the labels are wrong. Will more photos alone fix the model? Why?",
+        "reference_answer": "No. The model learns from the labels, so wrong labels teach it wrong patterns. Quality matters as much as quantity: cleaning the labels helps more than adding more bad data.",
+        "known_misconceptions": ["More data always fixes a model", "The AI will notice and ignore the wrong labels"]
+      },
+      {
+        "question_id": "L03-q2",
+        "topic": "Representative data",
+        "text": "A face-unlock feature works well for some users but often fails for people with darker skin. What is the most likely cause?",
+        "reference_answer": "The training data probably had too few faces with darker skin, so the model did not learn them well. Data that does not represent all users leads to models that fail for some groups.",
+        "known_misconceptions": ["The camera hardware is the only problem", "The AI was programmed to fail for some people", "It is just bad luck"]
+      }
+    ]
+  },
+  {
+    "lesson_id": "L04",
+    "number": 4,
+    "title": "Models and algorithms",
+    "questions": [
+      {
+        "question_id": "L04-q1",
+        "topic": "Training vs using a model",
+        "text": "When you use a trained photo app to tag your pictures, is the model still learning from your photos at that moment? Explain.",
+        "reference_answer": "Usually not. Training happens before, and then the model is used with its learned settings fixed. Using a model (inference) does not change it unless the company retrains it later.",
+        "known_misconceptions": ["AI learns from every single use in real time", "The model is retrained each time you open the app"]
+      },
+      {
+        "question_id": "L04-q2",
+        "topic": "What a model is",
+        "text": "In simple words, what is a 'model' in machine learning?",
+        "reference_answer": "A model is a mathematical function with settings (parameters) that were tuned on data during training. It takes an input, like a photo, and produces an output, like a label.",
+        "known_misconceptions": ["A model is a database of all the training examples", "A model is a small copy of a human brain", "A model is the computer it runs on"]
+      }
+    ]
+  },
+  {
+    "lesson_id": "L05",
+    "number": 5,
+    "title": "Training, testing and overfitting",
+    "questions": [
+      {
+        "question_id": "L05-q1",
+        "topic": "Overfitting",
+        "text": "A spam filter scores 99% accuracy on the emails it was trained on, but only 60% on new emails. What most likely went wrong?",
+        "reference_answer": "The model overfit: it memorized details of the training emails instead of learning general patterns, so it does not work well on emails it has not seen. Testing on held-out data catches this.",
+        "known_misconceptions": ["A bigger model fixes it", "New emails are just harder", "There is a bug in the code"]
+      },
+      {
+        "question_id": "L05-q2",
+        "topic": "Why we test on new data",
+        "text": "Why do we keep some data aside and never train on it?",
+        "reference_answer": "To check how the model does on examples it has never seen. Scoring a model on its own training data is like grading a student with the exact questions they practiced; it hides whether they really learned.",
+        "known_misconceptions": ["To save data in case of a crash", "Because using all the data makes training too slow", "The test data is used to train faster"]
+      }
+    ]
+  },
+  {
+    "lesson_id": "L06",
+    "number": 6,
+    "title": "Neural networks",
+    "questions": [
+      {
+        "question_id": "L06-q1",
+        "topic": "Neural networks vs brains",
+        "text": "Neural networks are 'inspired by the brain'. Does that mean they work like a human brain?",
+        "reference_answer": "No. They borrow a loose idea (many simple units connected together), but they are math: layers of numbers multiplied and added. They do not think, feel or understand like a brain.",
+        "known_misconceptions": ["A neural network is a digital brain", "Neural networks think and feel", "More neurons means it becomes conscious"]
+      },
+      {
+        "question_id": "L06-q2",
+        "topic": "How a network learns",
+        "text": "What actually changes inside a neural network while it is training?",
+        "reference_answer": "Its weights, the numbers on the connections, are adjusted a little at a time to reduce its errors on the training examples.",
+        "known_misconceptions": ["New code is written while it trains", "It adds new neurons as it learns", "It stores each example it sees"]
+      }
+    ]
+  },
+  {
+    "lesson_id": "L07",
+    "number": 7,
+    "title": "Computer vision",
+    "questions": [
+      {
+        "question_id": "L07-q1",
+        "topic": "How computers see images",
+        "text": "How does a computer 'see' a photo of a cat?",
+        "reference_answer": "As a grid of numbers: each pixel is stored as color values. A vision model finds patterns in those numbers, like edges and shapes, that it learned are linked to cats.",
+        "known_misconceptions": ["It sees the picture the way we do", "It compares the photo against every cat photo on the internet"]
+      },
+      {
+        "question_id": "L07-q2",
+        "topic": "Shortcut learning",
+        "text": "A model that detects wolves vs huskies turns out to be looking at whether there is snow in the background. What does this show?",
+        "reference_answer": "The model learned a shortcut from the training data (wolf photos often had snow) instead of the animal itself. Models learn whatever pattern predicts the label, even a wrong one.",
+        "known_misconceptions": ["The model is broken and needs to be rebuilt", "Snow and wolves really are linked so the model is right", "Someone programmed it to look at snow"]
+      }
+    ]
+  },
+  {
+    "lesson_id": "L08",
+    "number": 8,
+    "title": "Large language models",
+    "questions": [
+      {
+        "question_id": "L08-q1",
+        "topic": "How LLMs work",
+        "text": "When you ask ChatGPT a question, how does it come up with its answer?",
+        "reference_answer": "It predicts the next word (token) again and again, based on patterns it learned from a huge amount of text during training. It does not look the answer up, and it can sound confident even when it is wrong.",
+        "known_misconceptions": ["ChatGPT searches the internet for each answer", "It looks up stored answers in a database", "It understands and thinks like a human"]
+      },
+      {
+        "question_id": "L08-q2",
+        "topic": "Hallucinations",
+        "text": "An AI chatbot gives you a book title and author that do not exist. Why does this happen?",
+        "reference_answer": "It generates text that sounds likely, not text it has checked. When it lacks the facts, it can produce a confident, made-up answer. This is called a hallucination.",
+        "known_misconceptions": ["The AI is lying on purpose", "The book must have been deleted from the internet", "Its database had a typo"]
+      }
+    ]
+  },
+  {
+    "lesson_id": "L09",
+    "number": 9,
+    "title": "Multimodal AI",
+    "questions": [
+      {
+        "question_id": "L09-q1",
+        "topic": "What multimodal means",
+        "text": "What makes an AI model 'multimodal'?",
+        "reference_answer": "It can take in or produce more than one type of data, such as text, images and audio, and connect them, for example describing a photo in words.",
+        "known_misconceptions": ["It means it has multiple AIs running at once", "It means it works in many languages", "It means it runs on many devices"]
+      },
+      {
+        "question_id": "L09-q2",
+        "topic": "Image generation",
+        "text": "How does an AI image generator make a picture from a text prompt?",
+        "reference_answer": "It learned links between images and their text descriptions during training, then creates new pixels step by step that match the prompt. It does not copy and paste from one saved picture.",
+        "known_misconceptions": ["It searches for an existing image and edits it", "It cuts and pastes pieces of saved photos", "An artist draws it behind the scenes"]
+      }
+    ]
+  },
+  {
+    "lesson_id": "L10",
+    "number": 10,
+    "title": "Prompt engineering",
+    "questions": [
+      {
+        "question_id": "L10-q1",
+        "topic": "Writing good prompts",
+        "text": "Your prompt 'Write about dogs' gives a boring answer. How would you improve it, and why does that work?",
+        "reference_answer": "Add context and specifics: the audience, purpose, format, length and tone, for example 'Write a 100-word funny intro about dog breeds for 10-year-olds'. The model only has your words to go on, so clearer instructions lead to more useful output.",
+        "known_misconceptions": ["Saying please makes the AI try harder", "Repeating the same prompt gives a better answer", "Longer prompts are always better"]
+      },
+      {
+        "question_id": "L10-q2",
+        "topic": "Checking AI output",
+        "text": "Is a well-written prompt enough to make sure the AI's answer is correct? Why?",
+        "reference_answer": "No. Good prompts improve answers but cannot guarantee facts, because the model can still make things up. Important answers should be checked against reliable sources.",
+        "known_misconceptions": ["A perfect prompt guarantees a correct answer", "If the AI sounds confident it is right"]
+      }
+    ]
+  },
+  {
+    "lesson_id": "L11",
+    "number": 11,
+    "title": "AI ethics and bias",
+    "questions": [
+      {
+        "question_id": "L11-q1",
+        "topic": "Bias in AI",
+        "text": "An AI hiring tool rejects more women than men, even though it was never given anyone's gender. How can this happen?",
+        "reference_answer": "The model learned from past hiring data that was already biased. Other features, like hobbies, clubs or word choice in a resume, can act as stand-ins for gender, so the model repeats the old bias.",
+        "known_misconceptions": ["Programmers coded the bias on purpose", "Computers can't be biased", "The AI has its own opinions"]
+      },
+      {
+        "question_id": "L11-q2",
+        "topic": "Privacy",
+        "text": "Why can it be risky to paste a friend's private messages into a public AI chatbot?",
+        "reference_answer": "What you type may be stored by the company and, depending on its policy, reviewed or used to improve its models. You would be sharing your friend's private information without their consent.",
+        "known_misconceptions": ["Chats disappear the moment you close the window", "AI companies never look at what you type", "It's only risky if you use your real name"]
+      }
+    ]
+  },
+  {
+    "lesson_id": "L12",
+    "number": 12,
+    "title": "The future of AI",
+    "questions": [
+      {
+        "question_id": "L12-q1",
+        "topic": "AI and jobs",
+        "text": "Will AI simply replace all human jobs? Give a balanced answer.",
+        "reference_answer": "Not simply. AI automates some tasks within jobs, changes many jobs, and creates new ones. People who learn to work with AI tools are often more valuable, though some roles will shrink and workers may need retraining.",
+        "known_misconceptions": ["AI will replace every job soon", "AI will never affect jobs", "Only factory jobs are affected"]
+      },
+      {
+        "question_id": "L12-q2",
+        "topic": "Who controls AI",
+        "text": "Who decides how an AI system behaves: the AI itself or people? Explain.",
+        "reference_answer": "People. Humans choose the goals, the training data, the rules and where it is used, so they are responsible for its effects. The AI does not set its own goals.",
+        "known_misconceptions": ["The AI decides its own goals", "Once trained, nobody can control it", "Nobody is responsible for what AI does"]
+      }
+    ]
+  }
+]
