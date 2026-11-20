@@ -1,8 +1,8 @@
-# WhyWrong
+# Unmuddle
 
 **Find out *why* students get it wrong, not just *who* got it wrong.**
 
-WhyWrong reads every student's answer to a question, groups the wrong answers by the
+Unmuddle reads every student's answer to a question, groups the wrong answers by the
 mistake behind them, and gives the teacher a short report like:
 
 > **14 students** think a `LEFT JOIN` removes rows that have no match.
@@ -14,8 +14,20 @@ A teacher or TA with 50+ students cannot read every answer closely enough to see
 shared mistakes. Grading tells you *who* is wrong. It does not tell you *why*. So the same
 confusion stays in the class until the exam.
 
-WhyWrong turns a pile of answers into a short list of misconceptions, ranked by how many
+Unmuddle turns a pile of answers into a short list of misconceptions, ranked by how many
 students have each one, with a quick way to fix each in class.
+
+## Built for student-led AI education
+
+AI is now taught by students to students, in clubs and chapters like those of the
+[ML Empowerment Foundation](https://mlempowermentfoundation.org/). Student leaders are
+not trained teachers, and beginners pick up AI myths fast:
+*"ChatGPT searches the internet"*, *"computers can't be biased"*,
+*"a bigger model fixes everything"*.
+
+Unmuddle helps a chapter leader see these myths in their group after a workshop, and
+gives them a simple way to fix each one. It works for any subject: the repo includes
+an AI-literacy demo set and an intro SQL demo set.
 
 ## How it works
 
@@ -27,15 +39,16 @@ students have each one, with a quick way to fix each in class.
 
 ## Evaluation
 
-We measure how well WhyWrong finds the right misconception using the public
+We measure how well Unmuddle finds the right misconception using the public
 [Eedi "Mining Misconceptions in Mathematics"](https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics)
 dataset, where wrong answers are labeled by experts with the misconception behind them.
 
 ## Project layout
 
 ```
-whywrong/          Python package (the pipeline)
-data/sample/       Small demo set: SQL questions + student answers
+unmuddle/          Python package (the pipeline)
+data/sample_ai/    Main demo set: AI-literacy questions + learner answers
+data/sample/       Second demo set: SQL questions + student answers
 data/eedi/         Eedi dataset goes here (not committed, see data/README.md)
 tests/             Unit tests
 ```
@@ -51,8 +64,28 @@ pip install -r requirements.txt
 ## Roadmap
 
 - [x] Project setup and sample data
-- [ ] Data loading and correctness check
+- [x] AI-literacy demo set
+- [x] Data loading and right/wrong grading
 - [ ] Embeddings and clustering of wrong answers
-- [ ] LLM labels for each misconception + 2-minute fix
+- [ ] Name each misconception, 2-minute fix, personal feedback and follow-up question
 - [ ] Evaluation on the Eedi dataset
-- [ ] API, teacher dashboard and live demo
+- [ ] API and live sessions
+- [ ] Learner page (join by QR code) and live leader dashboard
+- [ ] Question bank for a 12-lesson beginner AI curriculum
+- [ ] Live demo
+
+## Run the tests
+
+```bash
+pytest
+```
+
+## Try the grader
+
+Needs a Gemini API key in `.env`.
+
+```bash
+python -m unmuddle.grading --sample ai
+```
+
+It grades the demo answers and shows how often it agrees with the hand labels.

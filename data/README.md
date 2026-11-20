@@ -1,5 +1,11 @@
 # Data
 
+## `sample_ai/` (committed, main demo)
+
+AI-literacy questions that match the topics of the ML Empowerment Foundation's
+beginner curriculum: how LLMs work, overfitting, and bias in AI.
+Same format as `sample/`. The answers are written for the demo, not real student data.
+
 ## `sample/` (committed)
 
 A small demo set written for this project, in the style of an intro databases course.

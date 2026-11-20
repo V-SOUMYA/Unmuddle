@@ -1,0 +1,20 @@
+[
+  {
+    "question_id": "ai1",
+    "topic": "How LLMs work",
+    "text": "When you ask ChatGPT a question, how does it come up with its answer?",
+    "reference_answer": "It predicts the next word (token) again and again, based on patterns it learned from a huge amount of text during training. It does not look the answer up, and it can sound confident even when it is wrong."
+  },
+  {
+    "question_id": "ai2",
+    "topic": "Overfitting",
+    "text": "A spam filter scores 99% accuracy on the emails it was trained on, but only 60% on new emails. What most likely went wrong?",
+    "reference_answer": "The model overfit: it memorized details of the training emails instead of learning general patterns, so it does not work well on emails it has not seen. Testing on held-out data catches this."
+  },
+  {
+    "question_id": "ai3",
+    "topic": "Bias in AI",
+    "text": "An AI hiring tool rejects more women than men, even though it was never given anyone's gender. How can this happen?",
+    "reference_answer": "The model learned from past hiring data that was already biased. Other features, like hobbies, clubs or word choice in a resume, can act as stand-ins for gender, so the model repeats the old bias."
+  }
+]

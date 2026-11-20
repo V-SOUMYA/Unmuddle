@@ -1,0 +1,37 @@
+student_id,question_id,answer,is_correct
+l01,ai1,"It predicts the next word over and over based on what it learned in training",1
+l02,ai1,"It searches Google really fast and summarizes the top results",0
+l03,ai1,"It looks up the answer in a giant database of questions and answers",0
+l04,ai1,"It understands the question like a person and thinks about it",0
+l05,ai1,"It goes on the internet and finds the best website for your question",0
+l06,ai1,"Picks the most likely next token each time, using patterns from its training text",1
+l07,ai1,"It has every answer stored and just finds the matching one",0
+l08,ai1,"It actually thinks and reasons like a human brain does",0
+l09,ai1,"It browses the web live every time you ask something",0
+l10,ai1,"A team of people writes the answers behind the scenes",0
+l11,ai1,"It guesses word by word what should come next, so it can be wrong but sound sure",1
+l12,ai1,"It retrieves a saved answer from its memory bank",0
+l01,ai2,"It memorized the training emails instead of learning general rules, overfitting",1
+l02,ai2,"It needs more layers in the neural network",0
+l03,ai2,"The new emails were just harder, the model is fine",0
+l04,ai2,"Overfitting, it learned the training data too exactly and can't generalize",1
+l05,ai2,"The accuracy was probably calculated wrong",0
+l06,ai2,"Make the model bigger so it can learn more",0
+l07,ai2,"Spammers changed their emails on purpose to trick it",0
+l08,ai2,"It got lazy after training",0
+l09,ai2,"It needs a bigger network, more neurons would fix it",0
+l10,ai2,"There must be a bug in the code that runs on new emails",0
+l11,ai2,"It memorized instead of learning patterns, should test on held out data",1
+l12,ai2,"New emails are more difficult so 60% is expected",0
+l01,ai3,"It learned from old hiring data that was already biased, and things like clubs can hint at gender",1
+l02,ai3,"The programmers must have coded it to be sexist",0
+l03,ai3,"It can't be biased, computers are objective, it's just a coincidence",0
+l04,ai3,"The AI has its own opinions about who is better",0
+l05,ai3,"Other info like hobbies or words in the resume act as a proxy for gender",1
+l06,ai3,"Someone on the team secretly added gender rules",0
+l07,ai3,"AI just uses math so it is always fair, maybe more men applied",0
+l08,ai3,"The AI decided by itself that men are better workers",0
+l09,ai3,"Past hiring was biased and the model copied that pattern from the data",1
+l10,ai3,"A developer wrote biased code on purpose",0
+l11,ai3,"Machines don't have bias, the women were probably less qualified",0
+l12,ai3,"The AI formed its own preference over time",0
