@@ -61,6 +61,7 @@
     const progress = document.getElementById("progress");
     let analyzed = false;
     let busy = false;
+    let renderedAt = null;  // analyzed_at of the report on screen
 
     function mythHtml(m, total) {
       const stats = m.follow_up_stats || { attempted: 0, fixed: 0 };
@@ -117,6 +118,7 @@
       const root = document.getElementById("report");
       root.innerHTML = html;
       stagger(root);
+      renderedAt = r.analyzed_at;
     }
 
     // Live updates change dots and counts in place, so nothing jumps.
@@ -161,7 +163,10 @@
     }
 
     async function refreshReport() {
-      try { updateReport(await api(`/api/sessions/${code}/report`)); } catch (_) { /* not analyzed yet */ }
+      let r;
+      try { r = await api(`/api/sessions/${code}/report`); } catch (_) { return; /* not analyzed yet */ }
+      // A new analysis means new groups: redraw. Otherwise just animate the changes.
+      if (r.analyzed_at !== renderedAt) renderReport(r); else updateReport(r);
     }
 
     // The pipeline runs in one request; the steps advance on a timer and all
