@@ -6,43 +6,49 @@
   <title>Session dashboard | Unmuddle</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="wrap">
     <header class="topbar">
-      <a class="wordmark" href="/">Un<span class="tangle">muddle</span></a>
+      <a class="wordmark" href="/"><span class="mark" aria-hidden="true"><i></i><i></i></span>Unmuddle</a>
       <a class="btn ghost" href="/#lessons">New session</a>
     </header>
 
-    <main id="main">
+    <main>
       <section class="session-bar">
-        <div>
-          <h1 id="title" style="font-size:clamp(1.8rem,4vw,2.6rem)">Loading session…</h1>
-          <div class="status-row">
+        <div class="reveal">
+          <h1 class="session-title" id="title">Loading session…</h1>
+          <div class="live">
             <div>
-              <div class="live-count" id="learners">0</div>
-              <div class="muted">learners have answered</div>
+              <div class="live-count" id="learners" aria-live="polite">0</div>
+              <div class="live-label"><span class="live-dot" aria-hidden="true"></span>learners have answered</div>
             </div>
             <button class="btn" id="analyze-btn" type="button" disabled>Find misconceptions</button>
           </div>
+          <div class="dots" id="joined" aria-label="0 learners"></div>
+          <div class="progress" id="progress" hidden>
+            <div>Checking every answer</div>
+            <div>Grouping wrong answers by meaning</div>
+            <div>Naming misconceptions and writing fixes</div>
+          </div>
           <p class="error" id="error" role="alert"></p>
         </div>
-        <div class="join-card">
+        <div class="join-card reveal" style="--i:1">
           <img id="qr" alt="QR code to join this session">
           <div>
-            <div class="muted small">Join at this site with code</div>
+            <div class="muted small">Join with code</div>
             <div class="code" id="code">······</div>
-            <a class="small" id="join-link" href="#" target="_blank" rel="noopener">Open the learner page</a>
+            <a class="small" id="join-link" href="#" target="_blank" rel="noopener">Open learner page</a>
           </div>
         </div>
       </section>
 
       <div id="notice"></div>
       <div id="report">
-        <p class="empty">When your group has answered, press <strong>Find misconceptions</strong>. You'll see each wrong idea, how many people hold it, and how to fix it.</p>
+        <p class="empty reveal" style="--i:2">When your group has answered, press <strong>Find misconceptions</strong>. You'll see each wrong idea, how many people hold it, and how to fix it.</p>
       </div>
     </main>
   </div>
@@ -52,55 +58,55 @@
     const code = (param("code") || "").toUpperCase();
     const analyzeBtn = document.getElementById("analyze-btn");
     const errorBox = document.getElementById("error");
+    const progress = document.getElementById("progress");
     let analyzed = false;
+    let busy = false;
 
-    function renderMyth(m) {
+    function mythHtml(m, total) {
       const stats = m.follow_up_stats || { attempted: 0, fixed: 0 };
-      const quotes = m.examples.map(e => `<li>${esc(e)}</li>`).join("");
+      const share = total ? Math.round((m.size / total) * 100) : 0;
       return `
-        <article class="myth">
+        <article class="myth reveal" data-mid="${esc(m.misconception_id)}">
           <div class="myth-head">
             <h3 class="myth-title">${esc(m.title)}</h3>
-            <span class="myth-count">${m.size}<small> ${m.size === 1 ? "learner" : "learners"}</small></span>
+            <span class="myth-count">${m.size}<small> of ${total}</small></span>
           </div>
-          ${dots(m.size, stats.fixed)}
+          <div class="share" aria-hidden="true"><span style="width:${share}%"></span></div>
+          ${dots(m.size, stats.fixed, "", 'data-role="dots"')}
           <p class="why">${esc(m.explanation)}</p>
-          <div class="fix"><strong>2-minute fix</strong><p>${esc(m.fix)}</p></div>
+          <div class="fix"><div class="fix-label">2-minute fix</div><p>${esc(m.fix)}</p></div>
           <details>
             <summary>What they wrote, and why it's tempting</summary>
             <p class="why">${esc(m.why_tempting)}</p>
-            <ul class="quotes">${quotes}</ul>
+            <ul class="quotes">${m.examples.map(e => `<li>${esc(e)}</li>`).join("")}</ul>
           </details>
           <p class="check">
-            <span class="fixed-count">${stats.fixed} of ${m.size}</span> fixed it on the follow-up question${stats.attempted > stats.fixed ? `, ${stats.attempted - stats.fixed} still muddled` : ""}.
-            <br>Follow-up: ${esc(m.follow_up_question)}
+            <span class="fixed-count" data-role="fixed">${stats.fixed} of ${m.size}</span> fixed it on the check question.
+            <br>Check question: ${esc(m.follow_up_question)}
           </p>
         </article>`;
     }
 
     function renderReport(r) {
-      document.getElementById("notice").innerHTML = r.new_answers_since_analysis
-        ? `<p class="notice">New answers came in after this analysis. Press Find misconceptions again to include them.</p>`
-        : "";
-      document.getElementById("report").innerHTML = r.questions.map(q => {
+      renderNotice(r);
+      const html = r.questions.map(q => {
         const wrong = q.n_answers - q.n_correct;
-        // Shared misconceptions get full cards; one-off ideas are folded away.
         const shared = q.misconceptions.filter(m => m.size > 1);
         const oneOff = shared.length ? q.misconceptions.filter(m => m.size === 1) : [];
         const main = shared.length ? shared : q.misconceptions;
         let body = main.length
-          ? main.map(renderMyth).join("")
-          : `<p class="all-right">Everyone got this one. Move on.</p>`;
+          ? main.map(m => mythHtml(m, q.n_answers)).join("")
+          : `<p class="all-right reveal">Everyone got this one right.</p>`;
         if (oneOff.length) {
           body += `
-            <details class="one-offs">
-              <summary>${oneOff.length} more wrong ${oneOff.length === 1 ? "idea" : "ideas"} held by one learner each</summary>
+            <details class="one-offs reveal">
+              <summary>${oneOff.length} more wrong ${oneOff.length === 1 ? "idea" : "ideas"}, each held by one learner</summary>
               <ul class="quotes">${oneOff.map(m => `<li><strong>${esc(m.title)}</strong><br>${esc(m.examples[0] || "")}</li>`).join("")}</ul>
             </details>`;
         }
         return `
           <section class="question-block">
-            <header>
+            <header class="reveal">
               <h2>${esc(q.topic)}</h2>
               <p class="question-text">${esc(q.text)}</p>
               <p class="score-line">${q.n_correct} of ${q.n_answers} got it right. ${wrong} muddled.</p>
@@ -108,16 +114,45 @@
             ${body}
           </section>`;
       }).join("");
+      const root = document.getElementById("report");
+      root.innerHTML = html;
+      stagger(root);
+    }
+
+    // Live updates change dots and counts in place, so nothing jumps.
+    function updateReport(r) {
+      renderNotice(r);
+      for (const q of r.questions) {
+        for (const m of q.misconceptions) {
+          const card = document.querySelector(`[data-mid="${CSS.escape(m.misconception_id)}"]`);
+          if (!card) continue;
+          const stats = m.follow_up_stats || { fixed: 0 };
+          syncDots(card.querySelector('[data-role="dots"]'), m.size, stats.fixed);
+          card.querySelector('[data-role="fixed"]').textContent = `${stats.fixed} of ${m.size}`;
+        }
+      }
+    }
+
+    function renderNotice(r) {
+      document.getElementById("notice").innerHTML = r.new_answers_since_analysis
+        ? `<p class="notice reveal">New answers came in after this analysis. Press Find misconceptions again to include them.</p>`
+        : "";
     }
 
     async function refreshSession() {
       try {
         const s = await api(`/api/sessions/${code}`);
         document.getElementById("title").textContent = s.title;
-        document.getElementById("learners").textContent = s.n_learners;
-        analyzeBtn.disabled = s.n_learners === 0;
-        analyzeBtn.textContent = s.analyzed ? "Find misconceptions again" : "Find misconceptions";
-        if (s.analyzed && !analyzed) { analyzed = true; refreshReport(); }
+        countTo(document.getElementById("learners"), s.n_learners);
+        syncDots(document.getElementById("joined"), s.n_learners, 0, "neutral");
+        if (!busy) {
+          analyzeBtn.disabled = s.n_learners === 0;
+          analyzeBtn.textContent = s.analyzed ? "Find misconceptions again" : "Find misconceptions";
+        }
+        if (s.analyzed && !analyzed) {
+          analyzed = true;
+          renderReport(await api(`/api/sessions/${code}/report`));
+        }
       } catch (e) {
         document.getElementById("title").textContent = "Session not found";
         errorBox.textContent = "Check the code in the address bar, or start a new session.";
@@ -126,36 +161,65 @@
     }
 
     async function refreshReport() {
-      try { renderReport(await api(`/api/sessions/${code}/report`)); } catch (_) { /* not analyzed yet */ }
+      try { updateReport(await api(`/api/sessions/${code}/report`)); } catch (_) { /* not analyzed yet */ }
+    }
+
+    // The pipeline runs in one request; the steps advance on a timer and all
+    // complete when the result arrives.
+    function startProgress() {
+      const steps = [...progress.children];
+      steps.forEach(s => s.className = "");
+      progress.hidden = false;
+      let i = 0;
+      steps[0].className = "active";
+      const timer = setInterval(() => {
+        if (i >= steps.length - 1) return;
+        steps[i].className = "done";
+        i += 1;
+        steps[i].className = "active";
+      }, 2600);
+      return (ok) => {
+        clearInterval(timer);
+        if (ok) {
+          steps.forEach(s => s.className = "done");
+          setTimeout(() => { progress.hidden = true; }, 900);
+        } else {
+          progress.hidden = true;
+        }
+      };
     }
 
     analyzeBtn.addEventListener("click", async () => {
+      busy = true;
       analyzeBtn.disabled = true;
       errorBox.textContent = "";
-      const previous = analyzeBtn.textContent;
-      analyzeBtn.textContent = "Reading every answer…";
+      analyzeBtn.textContent = "Working…";
+      const finish = startProgress();
       try {
-        renderReport(await api(`/api/sessions/${code}/analyze`, { method: "POST" }));
+        const report = await api(`/api/sessions/${code}/analyze`, { method: "POST" });
+        finish(true);
+        renderReport(report);
         analyzed = true;
         analyzeBtn.textContent = "Find misconceptions again";
+        document.getElementById("report").scrollIntoView({ behavior: reducedMotion() ? "auto" : "smooth", block: "start" });
       } catch (e) {
+        finish(false);
         errorBox.textContent = e.message;
-        analyzeBtn.textContent = previous;
+        analyzeBtn.textContent = "Find misconceptions";
       } finally {
+        busy = false;
         analyzeBtn.disabled = false;
       }
     });
 
     (async function start() {
       if (!code) { location.href = "/"; return; }
-      const joinUrl = `${location.origin}/join.html?code=${code}`;
       document.getElementById("code").textContent = code;
       document.getElementById("qr").src = `/api/sessions/${code}/qr.svg`;
-      document.getElementById("join-link").href = joinUrl;
+      document.getElementById("join-link").href = `${location.origin}/join.html?code=${code}`;
       try { await refreshSession(); } catch (_) { return; }
-      // Live: new learners every 3 s, follow-up results every 5 s.
       setInterval(refreshSession, 3000);
-      setInterval(() => { if (analyzed) refreshReport(); }, 5000);
+      setInterval(() => { if (analyzed) refreshReport(); }, 4000);
     })();
   </script>
 </body>
