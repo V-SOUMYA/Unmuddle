@@ -32,11 +32,52 @@ const saved = {
   set(key, value) { try { localStorage.setItem(key, value); } catch (_) { /* ignore */ } },
 };
 
-// One dot per learner. `fixed` of them are teal, the rest ochre.
-function dots(total, fixed = 0, extraClass = "") {
-  let html = `<div class="dots" role="img" aria-label="${total} learners, ${fixed} fixed">`;
+const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// One dot per learner. `fixed` of them are teal, the rest amber.
+function dots(total, fixed = 0, extraClass = "", attrs = "") {
+  let html = `<div class="dots" role="img" aria-label="${total} learners, ${fixed} fixed" ${attrs}>`;
   for (let i = 0; i < total; i++) {
     html += `<span class="dot ${i < fixed ? "fixed" : ""} ${extraClass}"></span>`;
   }
   return html + "</div>";
+}
+
+// Update an existing dot row in place, so changes animate instead of jumping:
+// new dots pop in, newly fixed dots settle into teal.
+function syncDots(container, total, fixed = 0, kind = "") {
+  const current = container.querySelectorAll(".dot");
+  for (let i = current.length; i < total; i++) {
+    const d = document.createElement("span");
+    d.className = `dot pop ${kind}`;
+    container.appendChild(d);
+  }
+  container.querySelectorAll(".dot").forEach((d, i) => {
+    const shouldFix = i < fixed;
+    if (shouldFix && !d.classList.contains("fixed")) {
+      d.classList.add("fixed", "just-fixed");
+      d.addEventListener("animationend", () => d.classList.remove("just-fixed"), { once: true });
+    } else if (!shouldFix) {
+      d.classList.remove("fixed");
+    }
+  });
+  container.setAttribute("aria-label", `${total} learners, ${fixed} fixed`);
+}
+
+// Count a number up (or down) to its new value.
+function countTo(el, target, ms = 600) {
+  const start = Number(el.textContent) || 0;
+  if (start === target || reducedMotion()) { el.textContent = target; return; }
+  const t0 = performance.now();
+  (function frame(now) {
+    const p = Math.min(1, (now - t0) / ms);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(start + (target - start) * eased);
+    if (p < 1) requestAnimationFrame(frame);
+  })(t0);
+}
+
+// Give each element a stagger index for the .reveal animation.
+function stagger(root, selector = ".reveal") {
+  root.querySelectorAll(selector).forEach((el, i) => el.style.setProperty("--i", Math.min(i, 12)));
 }
