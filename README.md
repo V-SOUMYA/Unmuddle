@@ -70,10 +70,33 @@ pip install -r requirements.txt
 - [x] Embeddings and clustering of wrong answers
 - [x] Name each misconception, 2-minute fix, personal feedback and follow-up question
 - [ ] Evaluation on the Eedi dataset
-- [ ] API and live sessions
+- [x] API and live sessions
 - [ ] Learner page (join by QR code) and live leader dashboard
 - [x] Question bank for a 12-lesson beginner AI curriculum
 - [ ] Live demo
+
+## Run the web API
+
+```bash
+uvicorn unmuddle.api:app --reload
+```
+
+Open http://localhost:8000/docs to try every endpoint. Main flow:
+
+| Step | Endpoint |
+|---|---|
+| Leader picks a lesson | `POST /api/sessions` -> 6-letter code |
+| Learners scan the QR code | `GET /api/sessions/{code}/qr.svg` |
+| Learners answer | `POST /api/sessions/{code}/responses` |
+| Leader runs the analysis | `POST /api/sessions/{code}/analyze` |
+| Learner sees feedback | `GET /api/sessions/{code}/learners/{id}/feedback` |
+| Learner answers the follow-up | `POST /api/sessions/{code}/learners/{id}/followup` |
+| Dashboard shows "fixed" counts | `GET /api/sessions/{code}/report` |
+
+`POST /api/demo` creates a session already filled with 12 learners' answers.
+
+Settings (environment variables): `GEMINI_API_KEY`, `UNMUDDLE_EMBEDDER` (`minilm` or `tfidf`),
+`UNMUDDLE_DB` (path to the SQLite file).
 
 ## Run the tests
 
