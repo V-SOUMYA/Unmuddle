@@ -6,19 +6,19 @@
   <title>Join a session | Unmuddle</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="wrap narrow">
     <header class="topbar">
-      <a class="wordmark" href="/">Un<span class="tangle">muddle</span></a>
+      <a class="wordmark" href="/"><span class="mark" aria-hidden="true"><i></i><i></i></span>Unmuddle</a>
       <span class="muted small" id="code-label"></span>
     </header>
 
     <main id="main">
-      <p class="muted">Loading…</p>
+      <div class="page-head"><p>Loading…</p></div>
     </main>
   </div>
 
@@ -29,27 +29,39 @@
     const storeKey = `unmuddle:${code}:learner`;
     let session = null;
     let pollTimer = null;
+    let shownReady = false;
+
+    const CHECK = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor" opacity="0.12"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+    function render(html) {
+      main.innerHTML = html;
+      stagger(main);
+    }
 
     function renderForm() {
-      const fields = session.questions.map(q => `
-        <div class="q-field">
-          <div class="topic">${esc(q.topic)}</div>
+      const fields = session.questions.map((q, i) => `
+        <div class="q-field reveal">
+          <div class="topic">Question ${i + 1} of ${session.questions.length}</div>
           <label for="q-${esc(q.question_id)}">${esc(q.text)}</label>
           <textarea id="q-${esc(q.question_id)}" data-qid="${esc(q.question_id)}" maxlength="1000"
-            placeholder="Answer in your own words. There's no penalty for being wrong."></textarea>
+            placeholder="Answer in your own words. It's fine to be unsure."></textarea>
         </div>`).join("");
-      main.innerHTML = `
-        <h1 style="font-size:2rem">${esc(session.title)}</h1>
-        <p class="muted" style="margin:10px 0 28px">Explain your thinking. Your answers help your leader see what to explain next.</p>
+      render(`
+        <div class="page-head reveal">
+          <h1>${esc(session.title)}</h1>
+          <p>Explain your thinking. Your answers help your leader decide what to explain next.</p>
+        </div>
         <form id="answer-form">
-          <div class="q-field">
+          <div class="q-field reveal">
             <label for="name">Your first name or a nickname</label>
             <input type="text" id="name" maxlength="40" autocomplete="given-name" required>
           </div>
           ${fields}
-          <button class="btn" type="submit">Send my answers</button>
-          <p class="error" id="form-error" role="alert"></p>
-        </form>`;
+          <div class="reveal">
+            <button class="btn" type="submit">Send my answers</button>
+            <p class="error" id="form-error" role="alert"></p>
+          </div>
+        </form>`);
       document.getElementById("answer-form").addEventListener("submit", submitAnswers);
     }
 
@@ -62,6 +74,7 @@
       const err = document.getElementById("form-error");
       if (!Object.keys(answers).length) { err.textContent = "Answer at least one question before sending."; return; }
       btn.disabled = true;
+      btn.textContent = "Sending…";
       try {
         const { learner_id } = await api(`/api/sessions/${code}/responses`, {
           method: "POST", body: JSON.stringify({ name, answers }),
@@ -71,39 +84,64 @@
       } catch (e) {
         err.textContent = e.message;
         btn.disabled = false;
+        btn.textContent = "Send my answers";
       }
     }
 
-    function renderItem(item) {
+    function itemHtml(item) {
       const m = item.misconception;
       if (!m) {
         return `
-          <article class="result ok">
-            <span class="tag ok">You got it</span>
-            <h3 style="margin-top:10px">${esc(item.topic)}</h3>
+          <article class="result reveal">
+            <span class="tag ok">Correct</span>
+            <h3>${esc(item.topic)}</h3>
             <p class="your">You wrote: ${esc(item.your_answer)}</p>
             ${item.reference_answer ? `<p>${esc(item.reference_answer)}</p>` : ""}
           </article>`;
       }
       const done = item.follow_up && item.follow_up.fixed;
       const tried = item.follow_up && !item.follow_up.fixed;
+      const follow = done
+        ? `<div class="success">${CHECK}<p>You answered the check question correctly. ${esc(item.follow_up.feedback)}</p></div>`
+        : `<label for="f-${esc(m.misconception_id)}">Check question: ${esc(m.follow_up_question)}</label>
+           ${tried ? `<p class="muted small" style="margin-bottom:8px">${esc(item.follow_up.feedback)} Try once more.</p>` : ""}
+           <textarea id="f-${esc(m.misconception_id)}" maxlength="1000" style="min-height:80px"></textarea>
+           <button class="btn clear" type="button" data-mid="${esc(m.misconception_id)}">Check my answer</button>
+           <p class="error" role="alert"></p>`;
       return `
-        <article class="result">
+        <article class="result reveal" data-mid="${esc(m.misconception_id)}">
           <span class="tag ${done ? "ok" : "muddled"}">${done ? "Unmuddled" : "Common mix-up"}</span>
-          <h3 style="margin-top:10px">${esc(item.topic)}</h3>
+          <h3>${esc(item.topic)}</h3>
           <p class="your">You wrote: ${esc(item.your_answer)}</p>
           <p>${esc(m.learner_feedback)}</p>
           <p class="why"><strong>The idea behind it:</strong> ${esc(m.explanation)}</p>
-          <div class="followup">
-            ${done
-              ? `<p class="fixed-count">You answered the check question correctly. ${esc(item.follow_up.feedback)}</p>`
-              : `<label for="f-${esc(m.misconception_id)}">Check question: ${esc(m.follow_up_question)}</label>
-                 ${tried ? `<p class="muted small" style="margin-bottom:8px">${esc(item.follow_up.feedback)} Try once more.</p>` : ""}
-                 <textarea id="f-${esc(m.misconception_id)}" maxlength="1000" style="min-height:80px"></textarea>
-                 <button class="btn clear" type="button" data-mid="${esc(m.misconception_id)}">Check my answer</button>
-                 <p class="error" role="alert"></p>`}
-          </div>
+          <div class="followup">${follow}</div>
         </article>`;
+    }
+
+    function wireFollowUps(learnerId) {
+      main.querySelectorAll("button[data-mid]").forEach(btn => btn.addEventListener("click", async () => {
+        const box = btn.previousElementSibling;
+        const err = btn.nextElementSibling;
+        if (!box.value.trim()) { err.textContent = "Write an answer first."; return; }
+        btn.disabled = true;
+        btn.textContent = "Checking…";
+        try {
+          await api(`/api/sessions/${code}/learners/${learnerId}/followup`, {
+            method: "POST", body: JSON.stringify({ misconception_id: btn.dataset.mid, answer: box.value.trim() }),
+          });
+          // Swap just this card, so the rest of the page stays put.
+          const data = await api(`/api/sessions/${code}/learners/${learnerId}/feedback`);
+          const item = data.items.find(i => i.misconception && i.misconception.misconception_id === btn.dataset.mid);
+          const card = btn.closest(".result");
+          card.outerHTML = itemHtml(item).replace('class="result reveal"', 'class="result"');
+          wireFollowUps(learnerId);
+        } catch (e) {
+          err.textContent = e.message;
+          btn.disabled = false;
+          btn.textContent = "Check my answer";
+        }
+      }));
     }
 
     async function showFeedback(learnerId) {
@@ -117,46 +155,45 @@
         return;
       }
       if (!data.ready) {
-        main.innerHTML = `
-          <h1 style="font-size:2rem">Answers sent</h1>
-          <div class="waiting"><span class="pulse" aria-hidden="true"></span>
-            <p>Your leader will look at everyone's answers together. Keep this page open and your feedback will show up here.</p>
-          </div>`;
+        if (!main.querySelector(".waiting")) {
+          render(`
+            <div class="page-head reveal">
+              <h1>Answers sent</h1>
+              <p>Your leader will look at everyone's answers together.</p>
+            </div>
+            <div class="waiting reveal">
+              <div class="dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              <p>Keep this page open. Your feedback will appear here.</p>
+            </div>`);
+        }
         pollTimer = setTimeout(() => showFeedback(learnerId), 4000);
         return;
       }
-      main.innerHTML = `
-        <h1 style="font-size:2rem">Your feedback</h1>
-        <p class="muted" style="margin:10px 0 24px">Mix-ups are normal. Each one comes with a short check question so you can try again.</p>
-        ${data.items.map(renderItem).join("")}`;
-      main.querySelectorAll("button[data-mid]").forEach(btn => btn.addEventListener("click", async () => {
-        const box = btn.previousElementSibling;
-        const err = btn.nextElementSibling;
-        if (!box.value.trim()) { err.textContent = "Write an answer first."; return; }
-        btn.disabled = true;
-        btn.textContent = "Checking…";
-        try {
-          await api(`/api/sessions/${code}/learners/${learnerId}/followup`, {
-            method: "POST", body: JSON.stringify({ misconception_id: btn.dataset.mid, answer: box.value.trim() }),
-          });
-          showFeedback(learnerId);
-        } catch (e) {
-          err.textContent = e.message;
-          btn.disabled = false;
-          btn.textContent = "Check my answer";
-        }
-      }));
+      if (shownReady) return;
+      shownReady = true;
+      const mixups = data.items.filter(i => i.misconception).length;
+      render(`
+        <div class="page-head reveal">
+          <h1>Your feedback</h1>
+          <p>${mixups
+            ? "Mix-ups are normal. Each one comes with a short check question so you can try again."
+            : "You got every question right."}</p>
+        </div>
+        ${data.items.map(itemHtml).join("")}`);
+      wireFollowUps(learnerId);
     }
 
     function renderCodeForm(message = "") {
-      main.innerHTML = `
-        <h1 style="font-size:2rem">Join a session</h1>
-        <p class="muted" style="margin:10px 0 20px">Type the 6-letter code your leader shared.</p>
-        <form class="join-inline" id="code-form">
+      render(`
+        <div class="page-head reveal">
+          <h1>Join a session</h1>
+          <p>Type the 6-letter code your leader shared.</p>
+        </div>
+        <form class="join-inline reveal" id="code-form">
           <input type="text" id="code-input" maxlength="6" aria-label="Class code" autocomplete="off">
           <button class="btn" type="submit">Join</button>
         </form>
-        <p class="error" role="alert">${esc(message)}</p>`;
+        <p class="error" role="alert">${esc(message)}</p>`);
       document.getElementById("code-form").addEventListener("submit", ev => {
         ev.preventDefault();
         const c = document.getElementById("code-input").value.trim().toUpperCase();
