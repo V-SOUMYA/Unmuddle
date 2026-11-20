@@ -69,11 +69,34 @@ pip install -r requirements.txt
 - [x] Data loading and right/wrong grading
 - [x] Embeddings and clustering of wrong answers
 - [x] Name each misconception, 2-minute fix, personal feedback and follow-up question
-- [ ] Evaluation on the Eedi dataset
+- [x] Evaluation on the Eedi dataset
 - [x] API and live sessions
-- [ ] Learner page (join by QR code) and live leader dashboard
+- [x] Learner page (join by QR code) and live leader dashboard
 - [x] Question bank for a 12-lesson beginner AI curriculum
 - [ ] Live demo
+
+## Evaluate on the Eedi dataset
+
+Download `train.csv` and `misconception_mapping.csv` from
+[Kaggle](https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics/data)
+into `data/eedi/`, then:
+
+```bash
+python -m unmuddle.eedi --embedder minilm
+python -m unmuddle.eedi --embedder tfidf     # baseline
+```
+
+Two checks against expert labels:
+
+| Check | What it measures | Metric |
+|---|---|---|
+| Retrieval | For each wrong answer, is the right misconception near the top of 2,500+? | MAP@25, Recall@25 |
+| Grouping | Do answers with the same misconception land in the same group? | ARI |
+
+| Embedder | MAP@25 | Recall@25 | Grouping ARI |
+|---|---|---|---|
+| TF-IDF (baseline) | _run it_ | _run it_ | _run it_ |
+| MiniLM | _run it_ | _run it_ | _run it_ |
 
 ## Run the web API
 
