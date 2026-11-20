@@ -1,0 +1,10 @@
+# Light set for the live site: Gemini does grading, embeddings and explanations,
+# so no PyTorch or local models are needed.
+pandas>=2.0
+numpy>=1.26
+scikit-learn>=1.4
+google-genai>=1.0
+python-dotenv>=1.0
+fastapi>=0.110
+uvicorn>=0.29
+segno>=1.6
