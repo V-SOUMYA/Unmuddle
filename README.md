@@ -1,110 +1,102 @@
 # Unmuddle
 
-**Find out *why* students get it wrong, not just *who* got it wrong.**
+**See what your class got wrong, and why.**
 
-Unmuddle reads every student's answer to a question, groups the wrong answers by the
-mistake behind them, and gives the teacher a short report like:
+Learners answer in their own words on their phones. Unmuddle groups the wrong answers by
+the idea behind them, ranks each misconception by how many learners hold it, and gives the
+leader a 2-minute way to fix it in class:
 
-> **14 students** think a `LEFT JOIN` removes rows that have no match.
-> **2-minute fix:** draw both tables on the board, then show that every row on the left side stays, and the missing values become `NULL`.
+> **5 learners** think *"ChatGPT searches the internet for each answer."*
+> **2-minute fix:** turn off the Wi-Fi and ask a downloaded model a question. It still
+> answers, because it predicts words from what it learned in training.
+
+Each learner then gets kind feedback and a new check question. When they get it right,
+their dot on the leader's dashboard turns from ochre to teal.
+
+**Live demo:** add the Render URL here after deploying · **Video:** add the YouTube link
 
 ## The problem
 
-A teacher or TA with 50+ students cannot read every answer closely enough to see the
-shared mistakes. Grading tells you *who* is wrong. It does not tell you *why*. So the same
-confusion stays in the class until the exam.
+A teacher or TA with 50 students can't read every answer closely enough to see the shared
+mistakes. Grading tells you *who* is wrong, not *why*, so the same confusion stays in the
+class until the exam.
 
-Unmuddle turns a pile of answers into a short list of misconceptions, ranked by how many
-students have each one, with a quick way to fix each in class.
-
-## Built for student-led AI education
-
-AI is now taught by students to students, in clubs and chapters like those of the
-[ML Empowerment Foundation](https://mlempowermentfoundation.org/). Student leaders are
-not trained teachers, and beginners pick up AI myths fast:
-*"ChatGPT searches the internet"*, *"computers can't be biased"*,
-*"a bigger model fixes everything"*.
-
-Unmuddle helps a chapter leader see these myths in their group after a workshop, and
-gives them a simple way to fix each one. It works for any subject: the repo includes
-an AI-literacy demo set and an intro SQL demo set.
+This matters even more now that AI is taught by students to students, in clubs and
+chapters like those of the [ML Empowerment Foundation](https://mlempowermentfoundation.org/).
+Student leaders aren't trained teachers, and beginners pick up AI myths fast:
+"ChatGPT searches the internet", "computers can't be biased", "a bigger model fixes
+everything".
 
 ## How it works
 
-1. **Check:** split answers into correct and wrong.
-2. **Embed:** turn each wrong answer into a vector that captures its meaning.
-3. **Cluster:** group wrong answers that share the same idea.
-4. **Explain:** an LLM names the misconception behind each group and writes a 2-minute fix.
-5. **Report:** the teacher sees the groups, sorted by size, with example answers.
-
-## Evaluation
-
-We measure how well Unmuddle finds the right misconception using the public
-[Eedi "Mining Misconceptions in Mathematics"](https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics)
-dataset, where wrong answers are labeled by experts with the misconception behind them.
-
-## Project layout
-
 ```
-unmuddle/          Python package (the pipeline)
-data/lessons.json  Question bank: 12 beginner AI lessons, 24 questions with known myths
-data/sample_ai/    Main demo set: AI-literacy questions + learner answers
-data/sample/       Second demo set: SQL questions + student answers
-data/eedi/         Eedi dataset goes here (not committed, see data/README.md)
-tests/             Unit tests
+answers ──> grade ──> embed wrong answers ──> cluster ──> explain ──> dashboard
+             (LLM)      (sentence vectors)    (by meaning)   (LLM)        │
+                                                                          v
+                         dot turns teal <── check question <── learner feedback
 ```
 
-## Setup
+1. **Grade:** Gemini compares each answer with the reference answer, judging the idea,
+   not the wording.
+2. **Embed:** each wrong answer becomes a sentence embedding that captures its meaning.
+3. **Cluster:** agglomerative clustering on cosine distance groups answers that share an
+   idea. The number of groups is picked automatically with the silhouette score.
+4. **Explain:** Gemini merges groups that are the same misconception, names each one as
+   the belief students hold, and writes why it's wrong, why it's tempting, a 2-minute
+   fix, learner feedback and a new check question.
+5. **Close the loop:** learners answer the check question, and the dashboard shows how
+   many fixed each misconception.
 
-```bash
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-```
+## Results
 
-## Roadmap
+**Grouping on the AI demo class** (wrong answers hand-labeled with their true myth;
+Adjusted Rand Index, 1.0 = perfect, 0 = random):
 
-- [x] Project setup and sample data
-- [x] AI-literacy demo set
-- [x] Data loading and right/wrong grading
-- [x] Embeddings and clustering of wrong answers
-- [x] Name each misconception, 2-minute fix, personal feedback and follow-up question
-- [x] Evaluation on the Eedi dataset
-- [x] API and live sessions
-- [x] Learner page (join by QR code) and live leader dashboard
-- [x] Question bank for a 12-lesson beginner AI curriculum
-- [ ] Live demo
+| Embedder | Mean ARI |
+|---|---|
+| TF-IDF (word overlap, baseline) | 0.29 |
+| MiniLM (meaning) | _run `python -m unmuddle.cluster --embedder minilm`_ |
+| Gemini embeddings | _run `python -m unmuddle.cluster --embedder gemini`_ |
 
-## Evaluate on the Eedi dataset
+Word overlap fails because learners say the same wrong idea in different words:
+"browses the web" and "searches Google" share no words but mean the same thing.
 
-Download `train.csv` and `misconception_mapping.csv` from
-[Kaggle](https://www.kaggle.com/competitions/eedi-mining-misconceptions-in-mathematics/data)
-into `data/eedi/`, then:
-
-```bash
-python -m unmuddle.eedi --embedder minilm
-python -m unmuddle.eedi --embedder tfidf     # baseline
-```
-
-Two checks against expert labels:
-
-| Check | What it measures | Metric |
-|---|---|---|
-| Retrieval | For each wrong answer, is the right misconception near the top of 2,500+? | MAP@25, Recall@25 |
-| Grouping | Do answers with the same misconception land in the same group? | ARI |
+**Eedi dataset** (experts labeled real students' wrong maths answers with one of 2,500+
+misconceptions):
 
 | Embedder | MAP@25 | Recall@25 | Grouping ARI |
 |---|---|---|---|
 | TF-IDF (baseline) | _run it_ | _run it_ | _run it_ |
 | MiniLM | _run it_ | _run it_ | _run it_ |
 
-## Run the web API
+**Tests:** 39 automated tests cover the pipeline, the API and the edge cases (`pytest`).
+
+## Quick start
 
 ```bash
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+cp .env.example .env             # then add your Gemini API key
 uvicorn unmuddle.api:app --reload
 ```
 
-Open http://localhost:8000/docs to try every endpoint. Main flow:
+Open http://localhost:8000 and click **Try a demo class**.
+
+## Tools
+
+| Command | What it does |
+|---|---|
+| `python -m unmuddle.grading --sample ai` | Grades the demo answers; prints agreement with hand labels |
+| `python -m unmuddle.cluster --sample ai --embedder minilm` | Prints the groups of wrong answers and their ARI |
+| `python -m unmuddle.pipeline --sample ai` | Full report; saved to `outputs/report_ai.json` |
+| `python -m unmuddle.eedi --embedder minilm` | Eedi evaluation (put the Kaggle files in `data/eedi/` first) |
+| `pytest` | Runs all tests |
+
+`--embedder` takes `minilm` (local), `gemini` (hosted) or `tfidf` (baseline).
+`--sample` takes `ai` or `sql`.
+
+## API
 
 | Step | Endpoint |
 |---|---|
@@ -113,63 +105,41 @@ Open http://localhost:8000/docs to try every endpoint. Main flow:
 | Learners answer | `POST /api/sessions/{code}/responses` |
 | Leader runs the analysis | `POST /api/sessions/{code}/analyze` |
 | Learner sees feedback | `GET /api/sessions/{code}/learners/{id}/feedback` |
-| Learner answers the follow-up | `POST /api/sessions/{code}/learners/{id}/followup` |
+| Learner answers the check question | `POST /api/sessions/{code}/learners/{id}/followup` |
 | Dashboard shows "fixed" counts | `GET /api/sessions/{code}/report` |
+| Demo class with 12 learners | `POST /api/demo` |
 
-`POST /api/demo` creates a session already filled with 12 learners' answers.
+Interactive docs at `/docs`. Settings (environment variables): `GEMINI_API_KEY`,
+`UNMUDDLE_EMBEDDER` (`minilm`, `gemini` or `tfidf`), `UNMUDDLE_DB` (SQLite file path).
 
-Settings (environment variables): `GEMINI_API_KEY`, `UNMUDDLE_EMBEDDER` (`minilm` or `tfidf`),
-`UNMUDDLE_DB` (path to the SQLite file).
+## Deploy
 
-## Run the tests
+The live site uses Gemini for embeddings, so it needs no PyTorch and fits a free server.
 
-```bash
-pytest
+1. On [Render](https://render.com), choose **New > Blueprint** and pick this repo.
+2. Paste your `GEMINI_API_KEY` when asked.
+3. Render builds the `Dockerfile` and gives you a public URL.
+
+Sessions are kept in SQLite on the server's temporary disk, which is fine for a demo.
+
+## Project layout
+
 ```
-
-## Try the grader
-
-Needs a Gemini API key in `.env`.
-
-```bash
-python -m unmuddle.grading --sample ai
+unmuddle/
+  data.py        Load questions, answers and lessons
+  llm.py         Gemini wrapper that returns JSON (plus a fake for tests)
+  grading.py     Step 1: right or wrong
+  embed.py       Sentence embeddings: MiniLM, Gemini, TF-IDF
+  cluster.py     Step 2: group wrong answers by meaning
+  explain.py     Step 3: name misconceptions, fixes, feedback, check questions
+  pipeline.py    Steps 1-3 as one report
+  eedi.py        Evaluation on the Eedi dataset
+  store.py       SQLite storage for sessions
+  api.py         FastAPI app
+web/             Landing page, learner page, leader dashboard
+data/lessons.json  Question bank: 12 beginner AI lessons, 24 questions with known myths
+data/sample_ai/  Demo class: AI-literacy answers with hand labels
+data/sample/     Second demo set: intro SQL
+docs/            Devpost write-up and demo video script
+tests/           39 tests
 ```
-
-It grades the demo answers and shows how often it agrees with the hand labels.
-
-## Try the clustering
-
-```bash
-python -m unmuddle.cluster --sample ai --embedder minilm   # meaning-based (main)
-python -m unmuddle.cluster --sample ai --embedder tfidf    # word-overlap baseline
-```
-
-It prints the groups of wrong answers for each question and scores them against hand
-labels with the Adjusted Rand Index (ARI: 1.0 = perfect, 0 = random).
-
-| Embedder | Mean ARI on AI demo set |
-|---|---|
-| TF-IDF (word overlap, baseline) | 0.29 |
-| MiniLM (meaning) | _run it and add your number_ |
-
-Word overlap fails because students say the same wrong idea in different words:
-"browses the web" and "searches Google" share no words but mean the same thing.
-
-## Run the full pipeline
-
-Needs a Gemini API key in `.env`.
-
-```bash
-python -m unmuddle.pipeline --sample ai
-```
-
-For each question you get every misconception, biggest first, with:
-
-- **title**: the wrong belief, in the students' own terms
-- **explanation** and **why it's tempting**
-- **2-minute fix**: a quick class activity or analogy
-- **learner feedback**: a kind note for each learner who holds the belief
-- **follow-up question**: a new question that checks whether the belief is gone
-
-The LLM also merges groups that turn out to be the same misconception. The full report
-is saved to `outputs/report_ai.json`.
