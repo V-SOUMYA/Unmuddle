@@ -209,7 +209,7 @@ footer { padding: 32px 0 48px; color: var(--muted); font-size: 0.875rem; border-
   background-size: 18px 18px;
 }
 
-/* Hero visual: wrong answers drift, group by meaning, then turn teal */
+/* Hero visual: wrong answers drift, group by meaning, then turn indigo */
 .viz {
   position: relative; aspect-ratio: 1 / 0.86; border: 1px solid var(--line); border-radius: 14px;
   overflow: hidden; background-color: var(--bg);
