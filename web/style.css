@@ -201,6 +201,64 @@ details[open] > :not(summary) { animation: rise 0.3s var(--ease) both; }
 
 footer { padding: 32px 0 48px; color: var(--muted); font-size: 0.875rem; border-top: 1px solid var(--line); }
 
+/* Dot-grid texture: a quiet echo of the one-dot-per-learner idea */
+.grid-bg {
+  background-image: radial-gradient(circle, var(--line) 1px, transparent 1.2px);
+  background-size: 18px 18px;
+}
+
+/* Hero visual: wrong answers drift, group by meaning, then turn teal */
+.viz {
+  position: relative; aspect-ratio: 1 / 0.86; border: 1px solid var(--line); border-radius: 14px;
+  overflow: hidden; background-color: var(--bg);
+}
+.viz-dot {
+  position: absolute; left: 0; top: 0; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%;
+  background: var(--line-strong);
+  transition: transform 1.6s var(--ease), background-color 0.6s ease;
+  will-change: transform;
+}
+.viz-dot.muddled { background: var(--muddle); }
+.viz-dot.fixed { background: var(--clear); }
+.viz-label {
+  position: absolute; left: 0; top: 0; transform: translate(-50%, 0); white-space: nowrap;
+  font-size: 0.8rem; color: var(--ink-2); background: rgba(255, 255, 255, 0.92); padding: 2px 8px; border-radius: 999px;
+  border: 1px solid var(--line); opacity: 0; transition: opacity 0.6s ease;
+}
+.viz-label b { font-weight: 600; color: var(--muddle); margin-left: 4px; transition: color 0.6s ease; }
+.viz-label.show { opacity: 1; }
+.viz-label.done b { color: var(--clear); }
+.viz-caption { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; font-size: 0.875rem; color: var(--muted); }
+.viz-steps { display: flex; gap: 6px; }
+.viz-steps i { width: 18px; height: 3px; border-radius: 2px; background: var(--line); transition: background 0.4s ease; }
+.viz-steps i.on { background: var(--ink); }
+.viz-phase { transition: opacity 0.3s ease; }
+
+/* Scroll reveal */
+.on-scroll { opacity: 0; transform: translateY(12px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+.on-scroll.seen { opacity: 1; transform: none; }
+
+/* Class map: every learner, grouped by what they believe */
+.class-map { border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 8px; }
+.class-map h2 { font-size: 1rem; }
+.class-map .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+.class-map .legend span { display: inline-flex; align-items: center; gap: 6px; }
+.class-map .legend i { width: 9px; height: 9px; border-radius: 50%; background: var(--muddle); display: inline-block; }
+.class-map .legend i.r { background: transparent; box-shadow: inset 0 0 0 1.5px var(--clear); }
+.class-map .legend i.f { background: var(--clear); }
+.map-row { display: grid; grid-template-columns: 11rem 1fr; gap: 16px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); margin-top: 12px; }
+.map-row + .map-row { margin-top: 0; }
+.map-row a { font-size: 0.9rem; font-weight: 500; text-decoration: none; }
+.map-row a:hover { text-decoration: underline; }
+.map-groups { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
+.map-group { display: flex; gap: 3px; }
+.map-group .dot { width: 10px; height: 10px; }
+.map-group.right .dot { background: transparent; box-shadow: inset 0 0 0 1.5px var(--clear); }
+
+@media (max-width: 640px) {
+  .map-row { grid-template-columns: 1fr; gap: 6px; }
+}
+
 /* Motion */
 .reveal { animation: rise 0.55s var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
 
@@ -220,5 +278,6 @@ footer { padding: 32px 0 48px; color: var(--muted); font-size: 0.875rem; border-
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .on-scroll { opacity: 1; transform: none; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; }
 }
