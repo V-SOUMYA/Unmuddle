@@ -111,6 +111,7 @@ textarea { min-height: 104px; resize: vertical; }
 .join-inline { display: flex; gap: 8px; }
 .join-inline input { width: 9.5rem; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 500; padding: 9px 12px; }
 .join-inline .btn { padding: 9px 14px; }
+.join-inline input::placeholder { text-transform: none; letter-spacing: 0; font-weight: 400; }
 
 /* Dots: one per learner */
 .dots { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0; min-height: 12px; }
