@@ -88,9 +88,35 @@
         </article>`;
     }
 
+    // One row per question: every learner as a dot, grouped by what they believe.
+    function classMapHtml(r) {
+      const rows = r.questions.map(q => {
+        const right = `<span class="map-group right" title="${q.n_correct} got it right">${dots(q.n_correct).replace(/^<div[^>]*>|<\/div>$/g, "")}</span>`;
+        const groups = q.misconceptions.map(m => {
+          const fixed = (m.follow_up_stats || {}).fixed || 0;
+          return `<span class="map-group" data-map-mid="${esc(m.misconception_id)}" title="${esc(m.title)}: ${m.size}">${dots(m.size, fixed).replace(/^<div[^>]*>|<\/div>$/g, "")}</span>`;
+        }).join("");
+        return `
+          <div class="map-row">
+            <a href="#q-${esc(q.question_id)}">${esc(q.topic)}</a>
+            <div class="map-groups">${q.n_correct ? right : ""}${groups}</div>
+          </div>`;
+      }).join("");
+      return `
+        <section class="class-map reveal">
+          <h2>Class map</h2>
+          <div class="legend">
+            <span><i class="r"></i>Got it right</span>
+            <span><i></i>Muddled, one cluster per misconception</span>
+            <span><i class="f"></i>Fixed on the check question</span>
+          </div>
+          ${rows}
+        </section>`;
+    }
+
     function renderReport(r) {
       renderNotice(r);
-      const html = r.questions.map(q => {
+      const html = classMapHtml(r) + r.questions.map(q => {
         const wrong = q.n_answers - q.n_correct;
         const shared = q.misconceptions.filter(m => m.size > 1);
         const oneOff = shared.length ? q.misconceptions.filter(m => m.size === 1) : [];
@@ -106,7 +132,7 @@
             </details>`;
         }
         return `
-          <section class="question-block">
+          <section class="question-block" id="q-${esc(q.question_id)}">
             <header class="reveal">
               <h2>${esc(q.topic)}</h2>
               <p class="question-text">${esc(q.text)}</p>
@@ -126,9 +152,11 @@
       renderNotice(r);
       for (const q of r.questions) {
         for (const m of q.misconceptions) {
+          const stats = m.follow_up_stats || { fixed: 0 };
+          const mapGroup = document.querySelector(`[data-map-mid="${CSS.escape(m.misconception_id)}"]`);
+          if (mapGroup) syncDots(mapGroup, m.size, stats.fixed);
           const card = document.querySelector(`[data-mid="${CSS.escape(m.misconception_id)}"]`);
           if (!card) continue;
-          const stats = m.follow_up_stats || { fixed: 0 };
           syncDots(card.querySelector('[data-role="dots"]'), m.size, stats.fixed);
           card.querySelector('[data-role="fixed"]').textContent = `${stats.fixed} of ${m.size}`;
         }
