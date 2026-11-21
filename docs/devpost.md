@@ -32,7 +32,7 @@ in their own words. With one press, Unmuddle:
    groups, explain why it's wrong and why it's tempting, and write a 2-minute fix the
    leader can use right away.
 4. Sends each learner kind, personal feedback and a new check question.
-5. Updates the dashboard live: one dot per learner, and each dot turns from ochre to teal
+5. Updates the dashboard live: one dot per learner, and each dot turns from grey to indigo
    when that learner gets the check question right.
 
 The leader goes from "half the room got it wrong" to "5 people think ChatGPT searches
