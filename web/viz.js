@@ -10,10 +10,11 @@
   const phaseText = root.querySelector(".viz-phase");
   const stepBars = [...root.querySelectorAll(".viz-steps i")];
 
+  // Cluster centres as fractions of the box: wide screens, then narrow screens.
   const groups = [
-    { label: "ChatGPT searches the web", size: 13, at: [0.3, 0.36] },
-    { label: "Computers can't be biased", size: 10, at: [0.7, 0.42] },
-    { label: "Bigger model fixes it", size: 7, at: [0.42, 0.76] },
+    { label: "ChatGPT searches the web", size: 13, wide: [0.27, 0.3], narrow: [0.3, 0.2] },
+    { label: "Computers can't be biased", size: 10, wide: [0.73, 0.4], narrow: [0.68, 0.47] },
+    { label: "Bigger model fixes it", size: 7, wide: [0.46, 0.72], narrow: [0.34, 0.74] },
   ];
   const total = groups.reduce((n, g) => n + g.size, 0);
 
@@ -37,7 +38,11 @@
   function measure() {
     const r = stage.getBoundingClientRect();
     w = r.width; h = r.height;
+    groups.forEach(g => { g.at = w > 480 ? g.wide : g.narrow; });
   }
+
+  const spacing = () => Math.max(12, Math.min(16, w / 30));
+  const radiusOf = g => spacing() * 0.78 * Math.sqrt(g.size);
 
   function place(el, x, y) { el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`; }
 
@@ -48,8 +53,7 @@
 
   // Sunflower packing keeps each cluster round and evenly spaced.
   function clusterPos(g, i) {
-    const spacing = Math.max(11, Math.min(15, w / 32));
-    const r = spacing * 0.62 * Math.sqrt(i + 0.5);
+    const r = spacing() * 0.78 * Math.sqrt(i + 0.5);
     const a = i * 2.39996;
     return [g.at[0] * w + r * Math.cos(a), g.at[1] * h + r * Math.sin(a)];
   }
@@ -57,8 +61,11 @@
   function cluster() {
     dots.forEach(d => place(d.el, ...clusterPos(groups[d.group], d.index)));
     groups.forEach(g => {
-      const radius = Math.max(11, Math.min(15, w / 32)) * 0.62 * Math.sqrt(g.size) + 14;
-      g.labelEl.style.transform = `translate(calc(${(g.at[0] * w).toFixed(1)}px - 50%), ${(g.at[1] * h + radius).toFixed(1)}px)`;
+      // Centre the label under its cluster, but keep it inside the box.
+      const half = g.labelEl.offsetWidth / 2;
+      const x = Math.min(Math.max(g.at[0] * w, half + 8), w - half - 8);
+      const y = g.at[1] * h + radiusOf(g) + 10;
+      g.labelEl.style.transform = `translate(${(x - half).toFixed(1)}px, ${y.toFixed(1)}px)`;
     });
   }
 
