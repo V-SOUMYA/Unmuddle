@@ -37,7 +37,22 @@
           <p class="error" id="hero-error" role="alert"></p>
         </div>
 
-        <article class="myth reveal" style="--i:3" aria-label="Example misconception">
+        <figure class="reveal" style="--i:3; margin:0" id="viz" aria-label="Animation: scattered wrong answers group into three misconceptions, then turn teal as learners fix them">
+          <div class="viz grid-bg" aria-hidden="true"></div>
+          <figcaption class="viz-caption" aria-hidden="true">
+            <span class="viz-phase">30 wrong answers, unsorted</span>
+            <span class="viz-steps"><i class="on"></i><i></i><i></i></span>
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="section on-scroll">
+        <div class="section-head">
+          <div>
+            <h2>What you'll see</h2>
+            <p>Every misconception, ranked by how many learners hold it, with a fix you can use straight away. Dots turn teal as learners get the check question right.</p>
+          </div>
+        <article class="myth" aria-label="Example misconception">
           <div class="myth-head">
             <h3 class="myth-title">ChatGPT searches the internet for each answer</h3>
             <span class="myth-count">5<small> of 12</small></span>
@@ -52,9 +67,10 @@
           </div>
           <p class="check"><span class="fixed-count" id="hero-fixed">0 of 5</span> fixed it on the check question</p>
         </article>
+        </div>
       </section>
 
-      <section class="section" id="lessons">
+      <section class="section on-scroll" id="lessons">
         <div class="section-head">
           <div>
             <h2>Start a live session</h2>
@@ -67,7 +83,7 @@
         </div>
       </section>
 
-      <section class="section">
+      <section class="section on-scroll">
         <div class="section-head">
           <div>
             <h2>How it works</h2>
@@ -88,6 +104,7 @@
   </div>
 
   <script src="common.js"></script>
+  <script src="viz.js"></script>
   <script>
     async function startSession(lessonId) {
       const { code } = await api("/api/sessions", { method: "POST", body: JSON.stringify({ lesson_id: lessonId }) });
@@ -136,20 +153,26 @@
       if (code) location.href = `join.html?code=${encodeURIComponent(code)}`;
     });
 
-    // The example class gets unmuddled, one learner at a time.
-    (function animateHero() {
+    // The example card gets unmuddled, one learner at a time, once it's in view.
+    (function animateExample() {
       const row = document.getElementById("hero-dots");
       const label = document.getElementById("hero-fixed");
-      if (reducedMotion()) { syncDots(row, 5, 3); label.textContent = "3 of 5"; return; }
-      let n = 0;
-      setTimeout(function step() {
-        if (n >= 3) return;
-        n += 1;
-        syncDots(row, 5, n);
-        label.textContent = `${n} of 5`;
-        setTimeout(step, 900);
-      }, 1400);
+      const run = () => {
+        let n = 0;
+        (function step() {
+          if (n >= 3) return;
+          n += 1;
+          syncDots(row, 5, n);
+          label.textContent = `${n} of 5`;
+          setTimeout(step, 700);
+        })();
+      };
+      if (reducedMotion() || !("IntersectionObserver" in window)) { syncDots(row, 5, 3); label.textContent = "3 of 5"; return; }
+      const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); setTimeout(run, 500); } }, { threshold: 0.6 });
+      io.observe(row);
     })();
+
+    revealOnScroll();
 
     loadLessons();
   </script>
