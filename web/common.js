@@ -77,6 +77,21 @@ function countTo(el, target, ms = 600) {
   })(t0);
 }
 
+// Fade sections in as they scroll into view (once each).
+function revealOnScroll(selector = ".on-scroll") {
+  const els = document.querySelectorAll(selector);
+  if (!("IntersectionObserver" in window) || reducedMotion()) {
+    els.forEach(el => el.classList.add("seen"));
+    return;
+  }
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("seen"); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  els.forEach(el => io.observe(el));
+}
+
 // Give each element a stagger index for the .reveal animation.
 function stagger(root, selector = ".reveal") {
   root.querySelectorAll(selector).forEach((el, i) => el.style.setProperty("--i", Math.min(i, 12)));
