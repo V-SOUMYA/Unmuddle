@@ -1,5 +1,5 @@
 /* Unmuddle: quiet, professional UI. Colour is used only for meaning:
-   blush pink = muddled, plum = cleared. */
+   soft green = muddled, plum = cleared. */
 :root {
   --bg: #ffffff;
   --surface: #faf7f8;
@@ -8,10 +8,10 @@
   --muted: #6e6169;
   --line: #efe6ea;
   --line-strong: #dccfd6;
-  --muddle: #f2c4ce;
-  --muddle-edge: rgba(155, 74, 94, 0.28);
-  --muddle-text: #9b4a5e;
-  --muddle-soft: #fdf1f3;
+  --muddle: #b9d175;
+  --muddle-edge: rgba(92, 118, 26, 0.3);
+  --muddle-text: #5a6e1c;
+  --muddle-soft: #f5f9e9;
   --clear: #6b2152;
   --clear-soft: #f6eaf1;
   --danger: #b42318;
@@ -131,7 +131,7 @@ textarea { min-height: 104px; resize: vertical; }
 .myth-count { font-size: 1.5rem; font-weight: 600; color: var(--ink); white-space: nowrap; letter-spacing: -0.02em; }
 .myth-count small { font-size: 0.85rem; font-weight: 400; color: var(--muted); letter-spacing: 0; }
 .share { height: 3px; background: var(--surface); border-radius: 3px; overflow: hidden; margin-top: 12px; }
-.share span { display: block; height: 100%; background: #e5a3b3; border-radius: 3px; transform-origin: left; animation: grow 0.9s var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms + 200ms); }
+.share span { display: block; height: 100%; background: #a6c25c; border-radius: 3px; transform-origin: left; animation: grow 0.9s var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms + 200ms); }
 .why { margin-top: 12px; color: var(--ink-2); }
 .fix { border-left: 2px solid var(--clear); padding: 2px 0 2px 16px; margin-top: 16px; }
 .fix-label { font-size: 0.85rem; font-weight: 600; color: var(--clear); margin-bottom: 2px; }
@@ -166,7 +166,7 @@ details[open] > :not(summary) { animation: rise 0.3s var(--ease) both; }
 .progress div.done { opacity: 1; }
 .progress div.done::before { background: var(--clear); border-color: var(--clear); }
 
-.notice { border: 1px solid #f0cdd6; background: var(--muddle-soft); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 0.925rem; margin-bottom: 8px; }
+.notice { border: 1px solid #dde8bd; background: var(--muddle-soft); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 0.925rem; margin-bottom: 8px; }
 
 .question-block { padding: 40px 0; border-top: 1px solid var(--line); }
 .question-block > header { margin-bottom: 20px; max-width: 44em; }
