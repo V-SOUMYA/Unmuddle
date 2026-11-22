@@ -34,7 +34,7 @@ const saved = {
 
 const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-// One dot per learner. `fixed` of them are plum, the rest blush pink.
+// One dot per learner. `fixed` of them are plum, the rest soft green.
 function dots(total, fixed = 0, extraClass = "", attrs = "") {
   let html = `<div class="dots" role="img" aria-label="${total} learners, ${fixed} fixed" ${attrs}>`;
   for (let i = 0; i < total; i++) {
