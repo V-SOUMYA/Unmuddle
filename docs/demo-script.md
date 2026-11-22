@@ -41,10 +41,10 @@ example answers.
 
 Back on the phone, show the feedback page: the kind note, the idea behind the mix-up,
 and the check question. Answer it correctly. Switch to the dashboard and watch one dot
-turn blue.
+turn plum.
 
 > "Every learner gets personal feedback and a new question. When they get it right, their
-> dot turns blue, so the leader can see the fix working."
+> dot turns plum, so the leader can see the fix working."
 
 ## 2:35–3:00 How we know it works
 
