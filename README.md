@@ -11,7 +11,7 @@ leader a 2-minute way to fix it in class:
 > answers, because it predicts words from what it learned in training.
 
 Each learner then gets kind feedback and a new check question. When they get it right,
-their dot on the leader's dashboard turns from yellow to blue.
+their dot on the leader's dashboard turns from pink to plum.
 
 **Live demo:** add the Render URL here after deploying · **Video:** add the YouTube link
 
@@ -33,7 +33,7 @@ everything".
 answers ──> grade ──> embed wrong answers ──> cluster ──> explain ──> dashboard
              (LLM)      (sentence vectors)    (by meaning)   (LLM)        │
                                                                           v
-                           dot turns blue <── check question <── learner feedback
+                           dot turns plum <── check question <── learner feedback
 ```
 
 1. **Grade:** Gemini compares each answer with the reference answer, judging the idea,
