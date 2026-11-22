@@ -1,21 +1,21 @@
 /* Unmuddle: quiet, professional UI. Colour is used only for meaning:
-   butter yellow = muddled, cobalt = cleared. */
+   blush pink = muddled, plum = cleared. */
 :root {
   --bg: #ffffff;
-  --surface: #f7f8fa;
-  --ink: #0f172a;
-  --ink-2: #334155;
-  --muted: #64748b;
-  --line: #e5e7eb;
-  --line-strong: #cbd5e1;
-  --muddle: #f4da7a;
-  --muddle-edge: rgba(161, 118, 0, 0.35);
-  --muddle-text: #8a6500;
-  --muddle-soft: #fef8e1;
-  --clear: #1d4ed8;
-  --clear-soft: #eaf0fe;
+  --surface: #faf7f8;
+  --ink: #1f1720;
+  --ink-2: #3d3239;
+  --muted: #6e6169;
+  --line: #efe6ea;
+  --line-strong: #dccfd6;
+  --muddle: #f2c4ce;
+  --muddle-edge: rgba(155, 74, 94, 0.28);
+  --muddle-text: #9b4a5e;
+  --muddle-soft: #fdf1f3;
+  --clear: #6b2152;
+  --clear-soft: #f6eaf1;
   --danger: #b42318;
-  --focus: #1d4ed8;
+  --focus: #6b2152;
   --radius: 10px;
   --radius-sm: 6px;
   --font: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -67,12 +67,12 @@ a:hover { text-decoration-color: currentColor; }
   border: 1px solid var(--ink); background: var(--ink); color: #fff; cursor: pointer; text-decoration: none;
   transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s var(--ease);
 }
-.btn:hover { background: #1e293b; }
+.btn:hover { background: #352a33; }
 .btn:active { transform: translateY(1px); }
 .btn.ghost { background: var(--bg); color: var(--ink); border-color: var(--line-strong); }
 .btn.ghost:hover { background: var(--surface); }
 .btn.clear { background: var(--clear); border-color: var(--clear); }
-.btn.clear:hover { background: #1e40af; }
+.btn.clear:hover { background: #561a42; }
 .btn[disabled] { opacity: 0.6; cursor: default; }
 
 label { display: block; font-weight: 500; margin-bottom: 8px; }
@@ -81,7 +81,7 @@ input[type="text"], textarea {
   border: 1px solid var(--line-strong); border-radius: var(--radius-sm); padding: 11px 13px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-input[type="text"]:focus, textarea:focus { border-color: var(--focus); box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15); outline: none; }
+input[type="text"]:focus, textarea:focus { border-color: var(--focus); box-shadow: 0 0 0 3px rgba(107, 33, 82, 0.15); outline: none; }
 textarea { min-height: 104px; resize: vertical; }
 
 /* Landing */
@@ -131,7 +131,7 @@ textarea { min-height: 104px; resize: vertical; }
 .myth-count { font-size: 1.5rem; font-weight: 600; color: var(--ink); white-space: nowrap; letter-spacing: -0.02em; }
 .myth-count small { font-size: 0.85rem; font-weight: 400; color: var(--muted); letter-spacing: 0; }
 .share { height: 3px; background: var(--surface); border-radius: 3px; overflow: hidden; margin-top: 12px; }
-.share span { display: block; height: 100%; background: #ecc94b; border-radius: 3px; transform-origin: left; animation: grow 0.9s var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms + 200ms); }
+.share span { display: block; height: 100%; background: #e5a3b3; border-radius: 3px; transform-origin: left; animation: grow 0.9s var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms + 200ms); }
 .why { margin-top: 12px; color: var(--ink-2); }
 .fix { border-left: 2px solid var(--clear); padding: 2px 0 2px 16px; margin-top: 16px; }
 .fix-label { font-size: 0.85rem; font-weight: 600; color: var(--clear); margin-bottom: 2px; }
@@ -166,13 +166,13 @@ details[open] > :not(summary) { animation: rise 0.3s var(--ease) both; }
 .progress div.done { opacity: 1; }
 .progress div.done::before { background: var(--clear); border-color: var(--clear); }
 
-.notice { border: 1px solid #f1dc94; background: var(--muddle-soft); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 0.925rem; margin-bottom: 8px; }
+.notice { border: 1px solid #f0cdd6; background: var(--muddle-soft); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 0.925rem; margin-bottom: 8px; }
 
 .question-block { padding: 40px 0; border-top: 1px solid var(--line); }
 .question-block > header { margin-bottom: 20px; max-width: 44em; }
 .question-text { margin-top: 6px; color: var(--muted); }
 .score-line { margin-top: 10px; font-size: 0.925rem; color: var(--ink-2); }
-.all-right { border: 1px solid #c9d8fb; background: var(--clear-soft); border-radius: var(--radius); padding: 16px 20px; color: var(--clear); font-weight: 500; }
+.all-right { border: 1px solid #e6c9da; background: var(--clear-soft); border-radius: var(--radius); padding: 16px 20px; color: var(--clear); font-weight: 500; }
 .one-offs { margin-top: 16px; }
 
 .empty { padding: 8px 0 64px; color: var(--muted); max-width: 34em; }
@@ -210,7 +210,7 @@ footer { padding: 32px 0 48px; color: var(--muted); font-size: 0.875rem; border-
   background-size: 18px 18px;
 }
 
-/* Hero visual: wrong answers drift, group by meaning, then turn blue */
+/* Hero visual: wrong answers drift, group by meaning, then turn plum */
 .viz {
   position: relative; aspect-ratio: 1 / 0.86; border: 1px solid var(--line); border-radius: 14px;
   overflow: hidden; background-color: var(--bg);
