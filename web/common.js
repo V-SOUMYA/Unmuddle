@@ -34,7 +34,7 @@ const saved = {
 
 const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-// One dot per learner. `fixed` of them are indigo, the rest fog grey.
+// One dot per learner. `fixed` of them are cobalt, the rest butter yellow.
 function dots(total, fixed = 0, extraClass = "", attrs = "") {
   let html = `<div class="dots" role="img" aria-label="${total} learners, ${fixed} fixed" ${attrs}>`;
   for (let i = 0; i < total; i++) {
@@ -44,7 +44,7 @@ function dots(total, fixed = 0, extraClass = "", attrs = "") {
 }
 
 // Update an existing dot row in place, so changes animate instead of jumping:
-// new dots pop in, newly fixed dots settle into indigo.
+// new dots pop in, newly fixed dots settle into cobalt.
 function syncDots(container, total, fixed = 0, kind = "") {
   const current = container.querySelectorAll(".dot");
   for (let i = current.length; i < total; i++) {
