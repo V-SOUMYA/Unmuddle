@@ -1,7 +1,7 @@
 // Hero visual: what Unmuddle does, in three looping stages.
 //   1. Muddle:    30 wrong answers drift around, unsorted.
 //   2. Group:     they glide into clusters, one per misconception.
-//   3. Unmuddle:  learners pass the check question and turn indigo.
+//   3. Unmuddle:  learners pass the check question and turn blue.
 
 (function () {
   const root = document.getElementById("viz");
