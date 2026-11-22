@@ -129,7 +129,11 @@
         }));
       } catch (e) {
         list.innerHTML = "";
-        document.getElementById("lesson-error").textContent = "Lessons didn't load. Refresh the page to try again.";
+        // Opening the HTML file directly (or with a static file server) leaves out the API.
+        const noServer = location.protocol === "file:" || e instanceof TypeError;
+        document.getElementById("lesson-error").innerHTML = noServer
+          ? "Lessons need the Unmuddle server. In the project folder, run <code>uvicorn unmuddle.api:app</code>, then open <a href=\"http://localhost:8000\">localhost:8000</a>."
+          : "Lessons didn't load. Refresh the page to try again.";
       }
     }
 
