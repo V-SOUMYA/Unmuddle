@@ -33,7 +33,7 @@ everything".
 answers ──> grade ──> embed wrong answers ──> cluster ──> explain ──> dashboard
              (LLM)      (sentence vectors)    (by meaning)   (LLM)        │
                                                                           v
-                         dot turns blue <──  check question <── learner feedback
+                           dot turns blue <── check question <── learner feedback
 ```
 
 1. **Grade:** Gemini compares each answer with the reference answer, judging the idea,
