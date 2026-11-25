@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Write your own questions | Unmuddle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wrap narrow">
+    <header class="topbar">
+      <a class="wordmark" href="/"><span class="mark" aria-hidden="true"><i></i><i></i></span>Unmuddle</a>
+      <a class="small" href="/#lessons">Use a ready-made lesson</a>
+    </header>
+
+    <main>
+      <div class="page-head reveal">
+        <h1>Write your own questions</h1>
+        <p>Any subject works. Ask open questions that learners answer in a sentence or two, and add what a correct answer should say.</p>
+      </div>
+
+      <form id="create-form" novalidate>
+        <div class="q-field reveal" style="--i:1">
+          <label for="title">Session name</label>
+          <input type="text" id="title" maxlength="80" placeholder="Week 3: Photosynthesis" required>
+        </div>
+
+        <div id="questions"></div>
+
+        <div class="reveal" style="--i:3">
+          <button class="btn ghost" type="button" id="add-btn">Add a question</button>
+          <span class="muted small" id="count-note" style="margin-left:10px"></span>
+        </div>
+
+        <div class="create-submit reveal" style="--i:4">
+          <button class="btn" type="submit" id="submit-btn">Start session</button>
+          <p class="error" id="form-error" role="alert"></p>
+        </div>
+      </form>
+
+      <aside class="tips reveal" style="--i:5">
+        <h3>Tips for questions that reveal misconceptions</h3>
+        <ul>
+          <li>Ask learners to explain why or how, not just to name a fact.</li>
+          <li>Pick something beginners often get wrong in a predictable way.</li>
+          <li>Keep the reference answer short: the key idea a correct answer must contain.</li>
+        </ul>
+      </aside>
+    </main>
+  </div>
+
+  <script src="common.js"></script>
+  <script>
+    const MAX = 5;
+    const list = document.getElementById("questions");
+    const addBtn = document.getElementById("add-btn");
+    const note = document.getElementById("count-note");
+    let nextId = 1;
+
+    function renumber() {
+      const cards = [...list.querySelectorAll(".q-card")];
+      cards.forEach((card, i) => {
+        card.querySelector(".q-num").textContent = `Question ${i + 1}`;
+        card.querySelector(".remove").hidden = cards.length === 1;
+      });
+      addBtn.disabled = cards.length >= MAX;
+      note.textContent = cards.length >= MAX ? `${MAX} questions is the limit.` : "";
+    }
+
+    function addQuestion(focus = true) {
+      const id = nextId++;
+      const card = document.createElement("section");
+      card.className = "q-card reveal";
+      card.innerHTML = `
+        <div class="q-card-head">
+          <span class="q-num"></span>
+          <button class="remove" type="button" aria-label="Remove this question">Remove</button>
+        </div>
+        <label for="text-${id}">Question</label>
+        <textarea id="text-${id}" data-role="text" maxlength="600" style="min-height:80px"
+          placeholder="Where does most of a tree's mass come from?"></textarea>
+        <label for="ref-${id}" style="margin-top:14px">What a correct answer should say</label>
+        <textarea id="ref-${id}" data-role="ref" maxlength="1000" style="min-height:70px"
+          placeholder="From carbon dioxide in the air, captured during photosynthesis. Not from the soil."></textarea>
+        <label for="topic-${id}" style="margin-top:14px">Short label <span class="muted small">(optional)</span></label>
+        <input type="text" id="topic-${id}" data-role="topic" maxlength="60" placeholder="Where plant mass comes from">`;
+      card.querySelector(".remove").addEventListener("click", () => {
+        card.classList.add("leaving");
+        const done = () => { card.remove(); renumber(); };
+        reducedMotion() ? done() : card.addEventListener("animationend", done, { once: true });
+      });
+      list.appendChild(card);
+      renumber();
+      if (focus) card.querySelector("textarea").focus();
+    }
+
+    addBtn.addEventListener("click", () => addQuestion());
+
+    document.getElementById("create-form").addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const err = document.getElementById("form-error");
+      const btn = document.getElementById("submit-btn");
+      err.textContent = "";
+      const title = document.getElementById("title").value.trim();
+      const questions = [...list.querySelectorAll(".q-card")].map(card => ({
+        text: card.querySelector('[data-role="text"]').value.trim(),
+        reference_answer: card.querySelector('[data-role="ref"]').value.trim(),
+        topic: card.querySelector('[data-role="topic"]').value.trim(),
+      }));
+
+      if (!title) { err.textContent = "Give the session a name."; document.getElementById("title").focus(); return; }
+      const bad = questions.findIndex(q => q.text.length < 5 || !q.reference_answer);
+      if (bad !== -1) {
+        err.textContent = `Question ${bad + 1} needs a question and a correct answer.`;
+        list.querySelectorAll(".q-card")[bad].querySelector(questions[bad].text.length < 5 ? '[data-role="text"]' : '[data-role="ref"]').focus();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Starting…";
+      try {
+        const { code } = await api("/api/sessions/custom", { method: "POST", body: JSON.stringify({ title, questions }) });
+        location.href = `dashboard.html?code=${code}`;
+      } catch (e) {
+        err.textContent = e.message;
+        btn.disabled = false;
+        btn.textContent = "Start session";
+      }
+    });
+
+    addQuestion(false);
+    stagger(document.querySelector("main"));
+  </script>
+</body>
+</html>
