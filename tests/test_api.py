@@ -112,3 +112,37 @@ def test_followup_before_analysis_is_rejected(client):
     ).json()["learner_id"]
     r = client.post(f"/api/sessions/{code}/learners/{learner}/followup", json={"misconception_id": "ai1-m0", "answer": "x"})
     assert r.status_code == 409
+
+
+def test_custom_session_full_flow(client):
+    body = {
+        "title": "Photosynthesis check",
+        "questions": [
+            {"text": "Where do plants get most of their mass from?", "reference_answer": "Carbon dioxide from the air.", "topic": "Plant mass"},
+            {"text": "Do plants respire at night?", "reference_answer": "Yes, plants respire all the time."},
+        ],
+    }
+    code = client.post("/api/sessions/custom", json=body).json()["code"]
+    s = client.get(f"/api/sessions/{code}").json()
+    assert s["title"] == "Photosynthesis check"
+    assert [q["question_id"] for q in s["questions"]] == ["q1", "q2"]
+    assert [q["topic"] for q in s["questions"]] == ["Plant mass", "Question 2"]
+    assert "reference_answer" not in s["questions"][0]  # hidden from learners
+
+    for name, answer in [("A", "from the soil"), ("B", "from soil nutrients"), ("C", "from water"), ("D", "it predicts")]:
+        client.post(f"/api/sessions/{code}/responses", json={"name": name, "answers": {"q1": answer}})
+    report = client.post(f"/api/sessions/{code}/analyze").json()
+    assert report["questions"][0]["n_answers"] == 4
+    assert report["questions"][0]["reference_answer"] == "Carbon dioxide from the air."
+
+
+def test_custom_session_validation(client):
+    url = "/api/sessions/custom"
+    ok_q = {"text": "What is 2 + 2?", "reference_answer": "4."}
+    assert client.post(url, json={"title": "T", "questions": []}).status_code == 422
+    assert client.post(url, json={"title": "T", "questions": [ok_q] * 6}).status_code == 422
+    assert client.post(url, json={"title": "", "questions": [ok_q]}).status_code == 422
+    assert client.post(url, json={"title": "T", "questions": [{"text": "Hi?", "reference_answer": "4."}]}).status_code == 422
+    blank = {"text": "     ", "reference_answer": "   4  "}
+    assert client.post(url, json={"title": "T", "questions": [blank]}).status_code == 400
+    assert client.post(url, json={"title": "T", "questions": [ok_q]}).status_code == 200
