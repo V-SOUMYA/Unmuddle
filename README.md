@@ -10,7 +10,8 @@ leader a 2-minute way to fix it in class:
 > **2-minute fix:** turn off the Wi-Fi and ask a downloaded model a question. It still
 > answers, because it predicts words from what it learned in training.
 
-Each learner then gets kind feedback and a new check question. When they get it right,
+Leaders pick one of 12 ready-made beginner AI lessons or write their own questions for any
+subject. Each learner then gets kind feedback and a new check question. When they get it right,
 their dot on the leader's dashboard turns from green to plum.
 
 **Live demo:** add the Render URL here after deploying · **Video:** add the YouTube link
@@ -101,6 +102,7 @@ Open http://localhost:8000 and click **Try a demo class**.
 | Step | Endpoint |
 |---|---|
 | Leader picks a lesson | `POST /api/sessions` -> 6-letter code |
+| ...or writes their own questions (1-5) | `POST /api/sessions/custom` -> 6-letter code |
 | Learners scan the QR code | `GET /api/sessions/{code}/qr.svg` |
 | Learners answer | `POST /api/sessions/{code}/responses` |
 | Leader runs the analysis | `POST /api/sessions/{code}/analyze` |
@@ -136,7 +138,7 @@ unmuddle/
   eedi.py        Evaluation on the Eedi dataset
   store.py       SQLite storage for sessions
   api.py         FastAPI app
-web/             Landing page, learner page, leader dashboard
+web/             Landing page, question writer, learner page, leader dashboard
 data/lessons.json  Question bank: 12 beginner AI lessons, 24 questions with known myths
 data/sample_ai/  Demo class: AI-literacy answers with hand labels
 data/sample/     Second demo set: intro SQL
