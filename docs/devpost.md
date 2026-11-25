@@ -21,7 +21,7 @@ judge AI long after the workshop ends.
 
 ## Solution overview
 
-The leader picks a lesson and shows a QR code. Learners join on their phones and answer
+The leader picks a lesson, or writes their own questions for any subject, and shows a QR code. Learners join on their phones and answer
 in their own words. With one press, Unmuddle:
 
 1. Checks each answer against the lesson's reference answer, judging the idea and not
@@ -52,7 +52,8 @@ the web, here's how to fix that in 2 minutes", and can see the fix working.
   questions, reference answers and the myths we expect.
 - **Join in seconds:** a 6-letter code and a QR code, with no accounts or app installs.
 - **Try it instantly:** a demo class with 12 learners' answers already filled in.
-- **Works for any subject:** the repo includes a second demo set for intro SQL.
+- **Works for any subject:** leaders can write up to 5 of their own questions, each with
+  the key idea a correct answer must contain. The repo also includes an intro SQL demo set.
 
 ## How we measured it
 
@@ -89,7 +90,7 @@ Before submitting, put your own numbers into this section from `python -m unmudd
 
 ## What's next
 
-- Let leaders write their own questions, or generate them from a lesson.
+- Suggest questions and reference answers from a leader's lesson notes.
 - Track misconceptions across sessions to show a chapter's progress over time.
 - Support answers in more languages.
 
