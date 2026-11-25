@@ -26,7 +26,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from unmuddle.config import ROOT
-from unmuddle.data import Lesson, load_lessons, load_sample
+from unmuddle.data import Lesson, Question, load_lessons, load_sample
 from unmuddle.embed import Embedder
 from unmuddle.explain import Misconception, check_follow_up
 from unmuddle.llm import LLM
@@ -36,10 +36,22 @@ from unmuddle.store import Store
 WEB_DIR = ROOT / "web"
 MAX_ANSWER_CHARS = 1000
 MAX_NAME_CHARS = 40
+MAX_CUSTOM_QUESTIONS = 5
 
 
 class NewSession(BaseModel):
     lesson_id: str
+
+
+class CustomQuestion(BaseModel):
+    text: str = Field(min_length=5, max_length=600)
+    reference_answer: str = Field(min_length=3, max_length=MAX_ANSWER_CHARS)
+    topic: str = Field(default="", max_length=60)
+
+
+class CustomSession(BaseModel):
+    title: str = Field(min_length=1, max_length=80)
+    questions: list[CustomQuestion] = Field(min_length=1, max_length=MAX_CUSTOM_QUESTIONS)
 
 
 class Submission(BaseModel):
@@ -127,6 +139,25 @@ def create_app(
         if lesson is None:
             raise HTTPException(404, "Unknown lesson.")
         code = store.create_session(f"Lesson {lesson.number}: {lesson.title}", lesson.questions)
+        return {"code": code}
+
+    @app.post("/api/sessions/custom")
+    def new_custom_session(body: CustomSession):
+        """A session with the leader's own questions, for any subject."""
+        questions = []
+        for i, q in enumerate(body.questions, 1):
+            text, reference = q.text.strip(), q.reference_answer.strip()
+            if not text or not reference:
+                raise HTTPException(400, f"Question {i} needs both a question and a reference answer.")
+            questions.append(
+                Question(
+                    question_id=f"q{i}",
+                    topic=q.topic.strip() or f"Question {i}",
+                    text=text,
+                    reference_answer=reference,
+                )
+            )
+        code = store.create_session(body.title.strip() or "My questions", questions)
         return {"code": code}
 
     @app.post("/api/demo")
