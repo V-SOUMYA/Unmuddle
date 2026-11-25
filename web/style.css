@@ -204,6 +204,23 @@ details[open] > :not(summary) { animation: rise 0.3s var(--ease) both; }
 
 footer { padding: 32px 0 48px; color: var(--muted); font-size: 0.875rem; border-top: 1px solid var(--line); }
 
+/* Write your own questions */
+.q-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px 20px; margin-bottom: 14px; }
+.q-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.q-num { font-weight: 600; }
+.remove { background: none; border: 0; padding: 4px 6px; font: inherit; font-size: 0.875rem; color: var(--muted); cursor: pointer; border-radius: var(--radius-sm); }
+.remove:hover { color: var(--danger); background: var(--surface); }
+.q-card.leaving { animation: leave 0.25s var(--ease) forwards; }
+.create-submit { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line); }
+.tips { margin: 40px 0 64px; padding: 18px 20px; background: var(--surface); border-radius: var(--radius); }
+.tips h3 { font-size: 1rem; }
+.tips ul { margin: 10px 0 0; padding-left: 1.2em; color: var(--ink-2); }
+.tips li + li { margin-top: 4px; }
+.own-questions { margin-top: 18px; font-size: 0.95rem; color: var(--muted); }
+.own-questions a { color: var(--clear); font-weight: 500; }
+
+@keyframes leave { to { opacity: 0; transform: translateY(-6px) scale(0.98); } }
+
 /* Dot-grid texture: a quiet echo of the one-dot-per-learner idea */
 .grid-bg {
   background-image: radial-gradient(circle, var(--line) 1px, transparent 1.2px);
