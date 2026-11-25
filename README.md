@@ -70,7 +70,7 @@ misconceptions):
 | TF-IDF (baseline) | _run it_ | _run it_ | _run it_ |
 | MiniLM | _run it_ | _run it_ | _run it_ |
 
-**Tests:** 39 automated tests cover the pipeline, the API and the edge cases (`pytest`).
+**Tests:** 41 automated tests cover the pipeline, the API and the edge cases (`pytest`).
 
 ## Quick start
 
@@ -143,5 +143,5 @@ data/lessons.json  Question bank: 12 beginner AI lessons, 24 questions with know
 data/sample_ai/  Demo class: AI-literacy answers with hand labels
 data/sample/     Second demo set: intro SQL
 docs/            Devpost write-up and demo video script
-tests/           39 tests
+tests/           41 tests
 ```
