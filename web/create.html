@@ -73,6 +73,10 @@
 
     function addQuestion(focus = true) {
       const id = nextId++;
+      // Only the first question shows an example, so later ones don't look filled in.
+      const ex = list.children.length === 0
+        ? { q: "Where does most of a tree's mass come from?", r: "From carbon dioxide in the air, captured during photosynthesis. Not from the soil.", t: "Where plant mass comes from" }
+        : { q: "", r: "", t: "" };
       const card = document.createElement("section");
       card.className = "q-card reveal";
       card.innerHTML = `
@@ -82,12 +86,12 @@
         </div>
         <label for="text-${id}">Question</label>
         <textarea id="text-${id}" data-role="text" maxlength="600" style="min-height:80px"
-          placeholder="Where does most of a tree's mass come from?"></textarea>
+          placeholder="${ex.q}"></textarea>
         <label for="ref-${id}" style="margin-top:14px">What a correct answer should say</label>
         <textarea id="ref-${id}" data-role="ref" maxlength="1000" style="min-height:70px"
-          placeholder="From carbon dioxide in the air, captured during photosynthesis. Not from the soil."></textarea>
+          placeholder="${ex.r}"></textarea>
         <label for="topic-${id}" style="margin-top:14px">Short label <span class="muted small">(optional)</span></label>
-        <input type="text" id="topic-${id}" data-role="topic" maxlength="60" placeholder="Where plant mass comes from">`;
+        <input type="text" id="topic-${id}" data-role="topic" maxlength="60" placeholder="${ex.t}">`;
       card.querySelector(".remove").addEventListener("click", () => {
         card.classList.add("leaving");
         const done = () => { card.remove(); renumber(); };
@@ -99,6 +103,11 @@
     }
 
     addBtn.addEventListener("click", () => addQuestion());
+
+    // Clear the error as soon as the leader starts fixing things.
+    document.getElementById("create-form").addEventListener("input", () => {
+      document.getElementById("form-error").textContent = "";
+    });
 
     document.getElementById("create-form").addEventListener("submit", async (ev) => {
       ev.preventDefault();
