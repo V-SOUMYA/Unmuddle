@@ -45,7 +45,7 @@ class NewSession(BaseModel):
 
 class CustomQuestion(BaseModel):
     text: str = Field(min_length=5, max_length=600)
-    reference_answer: str = Field(min_length=3, max_length=MAX_ANSWER_CHARS)
+    reference_answer: str = Field(min_length=1, max_length=MAX_ANSWER_CHARS)
     topic: str = Field(default="", max_length=60)
 
 
