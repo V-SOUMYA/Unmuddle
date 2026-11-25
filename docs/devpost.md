@@ -65,7 +65,7 @@ the web, here's how to fix that in 2 minutes", and can see the fix working.
   misconceptions. We report MAP@25 and Recall@25 for finding the right misconception, and
   ARI for grouping.
 - **Grader agreement:** how often the AI grader agrees with hand labels on the demo set.
-- **Tests:** 39 automated tests cover the pipeline, the API and every edge case we hit.
+- **Tests:** 41 automated tests cover the pipeline, the API and every edge case we hit.
 
 Before submitting, put your own numbers into this section from `python -m unmuddle.cluster`,
 `python -m unmuddle.eedi` and `python -m unmuddle.grading`.
